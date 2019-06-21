@@ -1,0 +1,6 @@
+= Auditing Spring Data Entities
+
+
+
+== References
+- https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#auditing[Spring Data JPA Reference]
