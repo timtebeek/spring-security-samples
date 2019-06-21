@@ -1,0 +1,5 @@
+= Spring Security Samples
+
+Collection of Spring Security samples; Part of a https://blog.jdriven.com/category/security/[security blog series].
+
+Each module demonstrates a single feature.
