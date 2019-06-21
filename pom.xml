@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.jdriven</groupId>
-	<artifactId>spring-security</artifactId>
+	<artifactId>spring-security-samples</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-security</name>
 	<description>Spring Security 5 sample projects</description>
