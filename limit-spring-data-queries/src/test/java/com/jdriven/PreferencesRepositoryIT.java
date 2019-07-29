@@ -29,6 +29,7 @@ class PreferencesRepositoryIT {
 	private TestEntityManager em;
 
 	private User userAlice;
+	private Preferences preferencesBob;
 
 	@BeforeEach
 	void setup() {
@@ -41,10 +42,10 @@ class PreferencesRepositoryIT {
 		User bob = new User();
 		bob.setName("bob");
 		bob = em.persist(bob);
-		Preferences preferencesBob = new Preferences();
-		preferencesBob.setUser(bob);
-		preferencesBob.setDarkMode(true);
-		em.persist(preferencesBob);
+		Preferences preferences = new Preferences();
+		preferences.setUser(bob);
+		preferences.setDarkMode(true);
+		this.preferencesBob = em.persist(preferences);
 	}
 
 	@Test
@@ -69,6 +70,16 @@ class PreferencesRepositoryIT {
 	}
 
 	@Test
+	@WithMockUser("bob")
+	void testBobAllowedToFindPreferencesById() {
+		// Retrieve preferences by id
+		Preferences found = preferencesRepo.findById(preferencesBob.getId());
+		assertThat(found).isNotNull();
+		assertThat(found.getUser().getName()).isEqualTo("bob");
+		assertThat(found.isDarkMode()).isTrue();
+	}
+
+	@Test
 	@WithMockUser("eve")
 	void testEveNotAllowedToSaveAlicesPreferences() {
 		// Try to save preferences for Alice
@@ -85,7 +96,16 @@ class PreferencesRepositoryIT {
 	void testEveNotAllowedToFindPreferences() {
 		// Retrieve any preferences
 		Optional<Preferences> found = preferencesRepo.findOne();
-		// Not results as Eve does not have preferences
+		// No results as Eve does not have preferences
 		assertThat(found).isNotPresent();
+	}
+
+	@Test
+	@WithMockUser("eve")
+	void testEveNotAllowedToFindPreferencesById() {
+		// No results as Eve does not have access to Bobs preferences
+		Assertions.assertThrows(AccessDeniedException.class, () -> {
+			preferencesRepo.findById(preferencesBob.getId());
+		});
 	}
 }
