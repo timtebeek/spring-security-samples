@@ -16,7 +16,7 @@ public class Preferences extends AbstractPersistable<Long> {
 
 	boolean darkMode = false;
 
-	@OneToOne
+	@OneToOne(optional = false)
 	private User user;
 
 }

@@ -1,0 +1,72 @@
+= Securing Spring Data methods
+
+Spring Data repositories allow you to easily query your entities with method names such as `findByUserName(String name)`.
+However, it can get cumbersome to always retrieve, pass and match on the active user.
+Luckily Spring Security integrates well with Spring Data to minimize the overhead.
+
+== Implementation
+
+This project saves and retrieves user `Preferences`; taking care to limit access to the active user through annotations.
+Storing the active user in the `SecurityContext` is out of scope for this example.
+
+=== Entities & repositories
+
+We define two entities; `User` and `Preferences`, with a `@OneToOne` mapping between them.
+
+We define a `PreferencesRepository` with the typical Spring Data `save(Preferences)`, `findById(Long)` and `findOne()` methods.
+
+=== Authorize active user
+
+When saving `Preferences` we want to make sure the record affected belongs to the active user.
+For this we can use the `@PreAuthorize` annotation with a custom security expression.
+```java
+@PreAuthorize("#entity.user.name == authentication.name")
+Preferences save(Preferences entity);
+```
+When this method is invoked, Spring Security will evaluate the security expression and either allow or reject the method call.
+
+Similarly, when retrieving preferences by ID, we want to ensure that the returned preferences belong to the active user.
+As we can not authorize on the ID argument, we can only validate access on the `Preferences` instance itself.
+```java
+@PostAuthorize("returnObject != null and returnObject.user.name == authentication.name")
+Preferences findById(Long id);
+```
+While the record will be retrieved from the database, it is only returned to the active user if the security expression evaluates to `true`.
+
+Lastly, we need to have Spring Security intercept calls to methods with these annotations, using the following configuration.
+```java
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+```
+
+=== Limit query result
+
+The integration between Spring Security and Spring Data even allows us a have a no-argument method return only the data for the active user.
+To set this up we first need to enable using Spring Security expressions with in Spring Data `@Query` annotations.
+```java
+@Bean
+public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+	return new SecurityEvaluationContextExtension();
+}
+```
+
+After that we can define a custom `@Query` which can pull information from the `principal` or `authentication`.
+```java
+@Query("select p from #{#entityName} p where p.user.name = ?#{ authentication.name }")
+Optional<Preferences> findOne();
+```
+
+=== Limit collection access
+
+As we've seen, both `@PreAuthorize` and `@PostAuthorize` validate access to a single object instance.
+If you want to instead limit access to a collection of entities, you can consider using `@PreFilter` and `@PostFilter`.
+However, both *`@PreFilter` and `@PostFilter` operate on the full collection*!
+So rather than retrieving all records from your database and filtering based on access, you might want to limit what you retrieve through a custom `@Query` method instead.
+
+=== Tests
+
+Our `PreferencesRepositoryIT` tests use mock users _Alice_ and _Bob_, with a malicious third user _Eve_ trying to manipulate and access data.
+You can see the correct users are granted access to store and retrieve records, whereas _Eve_ will get an `AccessDeniedException` handled separately.
+
+== References
+- https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#method-security-expressions[Method Security Expressions]
+- https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#data-configuration[Spring Data & Spring Security Configuration]
