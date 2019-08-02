@@ -1,0 +1,10 @@
+= Spring Security Samples
+
+A collection of Spring Security samples; Part of a https://blog.jdriven.com/category/security/[JDriven Spring Security blog series].
+
+The project is devided into separte submodules, each of which demonstrates a single feature in isolation.
+While submodules can be combined to form a larger solution, we thought separating the functionality would make it easier to comprehend and extend.
+
+== Submodules
+
+- link:audit-spring-data-entities/README.adoc[Auditing Spring Data Entities]

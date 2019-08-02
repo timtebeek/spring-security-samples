@@ -1,0 +1,39 @@
+= Auditing Spring Data Entities
+
+Spring Data enables you track who modified an entity and when, with just a few annotations.
+When combined with Spring Security, you can set this metadata based on the active user.
+
+== Implementation
+
+This project only looks at persistence and setting the audit metadata.
+It uses the active user to lookup an `Author` when saving a `Blogpost` entity.
+
+=== Entities & repositories
+We extend two Spring Data JPA classes for ease of use:
+
+- `class Author extends AbstractPersistable<Long>`
+- `class Blogpost extends AbstractAuditable<Author, Long>`
+
+Both entities are annotated with `@EntityListeners(AuditingEntityListener.class)`, which is a JPA entity listener to capture auditing information on persiting and updating entities.
+
+The `Blogpost` class extends `AbstractAuditable` with an `Author` auditing type argument.
+In the database this relation will be captured as a foreign key to the `Author` table.
+
+Our repositories merely extend the Spring Data `Repository` interface to define the `save` and `findByName` methods.
+
+=== Enable JPA Auditing
+
+We define a `AuditSecurityConfiguration` class, which we annotate with `@EnableJpaAuditing` to enable auditing in JPA via annotation configuration.
+This will trigger Spring Data into setting the audit metadata on your entities.
+
+The `AuditSecurityConfiguration` class defines a single `AuditorAware<Author>` bean, needed to lookup the `Author` entity corresponding to the active user.
+Note that the return type matches the auditing type argument set on the `Blogpost` class.
+
+=== Tests
+
+Our `AuditSecurityConfigurationTest` ties together all elements to ensure audit metadata is looked up and set when saving a `Blogpost` entity.
+
+There are additional tests that verify the current behavior when an `Author` can not be found.
+
+== References
+- https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#auditing[Spring Data JPA Reference]
