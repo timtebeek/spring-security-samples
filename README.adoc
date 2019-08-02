@@ -8,3 +8,4 @@ While submodules can be combined to form a larger solution, we thought separatin
 == Submodules
 
 - link:audit-spring-data-entities/README.adoc[Auditing Spring Data Entities]
+- link:limit-spring-data-queries/README.adoc[Securing Spring Data Queries]
