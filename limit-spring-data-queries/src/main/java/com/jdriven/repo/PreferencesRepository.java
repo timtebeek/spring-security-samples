@@ -16,6 +16,6 @@ public interface PreferencesRepository extends Repository<Preferences, Long> {
 	Preferences findById(Long id);
 
 	@Query("select p from #{#entityName} p where p.user.name = ?#{ authentication.name }")
-	Optional<Preferences> findOne();
+	Optional<Preferences> findUserPreferences();
 
 }

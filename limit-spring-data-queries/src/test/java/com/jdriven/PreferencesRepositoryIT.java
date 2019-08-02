@@ -62,7 +62,7 @@ class PreferencesRepositoryIT {
 	@WithMockUser("bob")
 	void testBobAllowedToFindPreferences() {
 		// Retrieve preferences
-		Optional<Preferences> found = preferencesRepo.findOne();
+		Optional<Preferences> found = preferencesRepo.findUserPreferences();
 		assertThat(found).hasValueSatisfying(p -> {
 			assertThat(p.getUser().getName()).isEqualTo("bob");
 			assertThat(p.isDarkMode()).isTrue();
@@ -86,16 +86,14 @@ class PreferencesRepositoryIT {
 		Preferences lightpreferences = new Preferences();
 		lightpreferences.setUser(userAlice);
 		lightpreferences.setDarkMode(true);
-		Assertions.assertThrows(AccessDeniedException.class, () -> {
-			preferencesRepo.save(lightpreferences);
-		});
+		Assertions.assertThrows(AccessDeniedException.class, () -> preferencesRepo.save(lightpreferences));
 	}
 
 	@Test
 	@WithMockUser("eve")
 	void testEveNotAllowedToFindPreferences() {
 		// Retrieve any preferences
-		Optional<Preferences> found = preferencesRepo.findOne();
+		Optional<Preferences> found = preferencesRepo.findUserPreferences();
 		// No results as Eve does not have preferences
 		assertThat(found).isNotPresent();
 	}
@@ -104,8 +102,6 @@ class PreferencesRepositoryIT {
 	@WithMockUser("eve")
 	void testEveNotAllowedToFindPreferencesById() {
 		// No results as Eve does not have access to Bobs preferences
-		Assertions.assertThrows(AccessDeniedException.class, () -> {
-			preferencesRepo.findById(preferencesBob.getId());
-		});
+		Assertions.assertThrows(AccessDeniedException.class, () -> preferencesRepo.findById(preferencesBob.getId()));
 	}
 }
