@@ -62,5 +62,6 @@
 	<modules>
 		<module>audit-spring-data-entities</module>
 		<module>limit-spring-data-queries</module>
+		<module>gateway</module>
 	</modules>
 </project>
