@@ -1,0 +1,11 @@
+
+spring:
+  application:
+    name: gateway
+  session:
+    timeout: 5400 # 90 minutes
+  cloud:
+    gateway:
+      # enable at will
+      x-forwarded.enabled: false
+      forwarded.enabled: false

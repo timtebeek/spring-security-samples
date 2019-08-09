@@ -1,0 +1,18 @@
+= Stateless Gateway
+
+...
+
+== Set-up
+
+The basic set-up we are going for is:
+
+* gateway at localhost:8080
+* service1 at localhost:8081
+* service2 at localhost:8082
+* keycloak at localhost:9090
+
+run .. to start a local keycloak server on port 8082
+
+run .. to start the gateway
+
+run .. to start the backend service

@@ -9,8 +9,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<packaging>pom</packaging>
-
 	<artifactId>gateway</artifactId>
 
+	<modules>
+		<module>stateful-gateway</module>
+	</modules>
 
 </project>

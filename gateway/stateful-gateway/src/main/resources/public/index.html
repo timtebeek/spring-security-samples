@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<script language="JavaScript">
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "/api/service1/hello", true);
+		xhr.onload = function () {
+			console.log(xhr);
+			if (xhr.status === 401 || xhr.status === 403) {
+				//alert('Authentication failed, redirecting to keycloak login');
+				//window.location = "http://localhost:9090/auth/realms/master/protocol/openid-connect/auth?client_id=frontend&redirect_uri=https%3A%2F%2Flocalhost%3A8080%2Fexchange&state=123&response_type=code&scope=openid";
+
+				alert('skipped the first step to fake successful login @ keycloak');
+				// for now this endpoint just automatically logs in the user (without going to keycloak) and redirects back here again
+				window.location = "/exchange";
+			} else {
+				alert(xhr.responseText);
+			}
+		};
+		xhr.send();
+	</script>
+	<style>
+
+	</style>
+	<title>Test Frontend</title>
+</head>
+<body>
+<noscript>
+	<strong>Please enable JavaScript.</strong>
+</noscript>
+<div>
+	<span>attempting to load response from protected backend through gateway...</span>
+</div>
+</body>
+</html>
