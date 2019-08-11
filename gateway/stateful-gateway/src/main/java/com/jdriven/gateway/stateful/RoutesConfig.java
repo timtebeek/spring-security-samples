@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -22,6 +25,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
+
 @Configuration
 public class RoutesConfig {
 
@@ -29,6 +33,7 @@ public class RoutesConfig {
 	public RouterFunction<ServerResponse> indexRouter(@Value("classpath:/public/index.html") final Resource index) {
 		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(index));
 	}
+
 
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {

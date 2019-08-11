@@ -8,11 +8,12 @@ The basic set-up we are going for is:
 
 * gateway at localhost:8080
 * service1 at localhost:8081
-* service2 at localhost:8082
-* keycloak at localhost:9090
+* keycloak at localhost:8180
 
-run .. to start a local keycloak server on port 8082
+run `docker-compose up -d` to start a local keycloak server on port 8180
 
-run .. to start the gateway
+create a realm called `service` with a client called `gateway` with secret `42aad01b-414e-4a80-8e6d-7b9332b3aebe` and create a user.
 
-run .. to start the backend service
+run `GatewayApplication` to start the gateway
+
+run `nc -l localhost 8081` to fake a backend service1 to listen to the proxied request.

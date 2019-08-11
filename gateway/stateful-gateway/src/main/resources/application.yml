@@ -9,3 +9,25 @@ spring:
       # enable at will
       x-forwarded.enabled: false
       forwarded.enabled: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: gateway
+            client-secret: 42aad01b-414e-4a80-8e6d-7b9332b3aebe
+            clientName: Keycloak
+            authorization-grant-type: authorization_code
+            redirectUriTemplate: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/auth
+            token-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/token
+            user-info-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
