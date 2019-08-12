@@ -4,8 +4,8 @@ Although it is probably pretty clear that an (API) Gateway is meant to be betwee
 
 The most noticeable differences being mostly related to whether or not the client is a browser-based app and if-so whether or not the app, gateway and/or identify provider (IdP) share the same domain.
 
-To prevent even more complexity the main focus of this exploration of a Gateway is for a browser-based as client served from the same domain.
-This basically means the app itself as well the IdP are served through the gateway.
+To prevent even more complexity the main focus of this exploration of a Gateway is for a browser-based client served from the same domain.
+This basically means the app itself as well as the IdP are served through the gateway.
 Most parts of this exploration should be usable in other scenarios (native-clients) as well though.
 
 == State of the art

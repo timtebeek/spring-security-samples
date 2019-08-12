@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>stateful-gateway</module>
+		<module>dummy-service</module>
 	</modules>
 
 </project>

@@ -9,3 +9,4 @@ While submodules can be combined to form a larger solution, we thought separatin
 
 - link:audit-spring-data-entities/README.adoc[Auditing Spring Data Entities]
 - link:limit-spring-data-queries/README.adoc[Securing Spring Data Queries]
+- link:gateway/README.adoc[API Gateways]

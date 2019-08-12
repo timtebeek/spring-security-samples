@@ -34,7 +34,6 @@ public class RoutesConfig {
 		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(index));
 	}
 
-
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
 		//TODO: externalize (or leave intentionally plain)
