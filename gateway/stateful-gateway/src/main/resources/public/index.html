@@ -3,24 +3,15 @@
 <head>
 	<meta charset="utf-8">
 	<script language="JavaScript">
-		var xhr = new XMLHttpRequest();
-		// attempt to acquire data from backend service
-		xhr.open('GET', '/api/service1/hello', true);
-		xhr.onerror = function () {
-			// unauthorized requests with get a 302 redirect to keycloak, but due to CORS this fails
-			// (which would be pointless from XHR in the background anyway)
-			// so manually point browser to auth endpoint
+		// treat redirect requests as error, so we can manually point the browser to login screen
+		fetch('/api/service1/hello', {redirect: 'error'})
+		.then(function(result) {
+			result.json().then(function(response) {
+				alert(response.message);
+			});
+		}, function(error) {
 			window.location = 'http://localhost:8080/oauth2/authorization/keycloak';
-		};
-		xhr.onload = function () {
-			if (xhr.status === 401 || xhr.status === 403) {
-				// somehow logged in but with insufficient rights?
-				alert('Authentication still failed: ' + xhr.responseText);
-			} else {
-				alert(xhr.responseText);
-			}
-		};
-		xhr.send();
+		});
 	</script>
 	<title>Dead Simple Frontend</title>
 </head>

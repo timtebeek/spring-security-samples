@@ -19,7 +19,7 @@ spring:
             client-secret: 42aad01b-414e-4a80-8e6d-7b9332b3aebe
             clientName: Keycloak
             authorization-grant-type: authorization_code
-            redirectUriTemplate: '{baseUrl}/login/oauth2/code/{registrationId}'
+            redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
             scope:
               - openid
               - profile

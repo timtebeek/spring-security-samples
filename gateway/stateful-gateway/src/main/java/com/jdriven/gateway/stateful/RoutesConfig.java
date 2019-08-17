@@ -54,19 +54,13 @@ public class RoutesConfig {
 			.uri(url));
 	}
 
-	// remove "/api/<service_name>/ from path
 	private Function<GatewayFilterSpec, UriSpec> rewriteAndFilter(final String serviceName) {
-		return gfs -> filter(gfs).rewritePath(format("/api/%s/?(?<remaining>.*)", serviceName), "/${remaining}");
-	}
-
-	private GatewayFilterSpec filter(GatewayFilterSpec gfs) {
-		return gfs
-
+		return gfs -> gfs
 			// do not pass client-auth stuff to backend services
 			.removeRequestHeader("cookie")
-			.removeRequestHeader("x-xsrf-token") //TODO: determine to include/exclude CSRF from this example (as it complicates client code)
-
 			// do not allow (overriding of) cookies from services
-			.removeResponseHeader("set-cookie");
+			.removeResponseHeader("set-cookie")
+			// remove "/api/<service_name>/ from path
+			.rewritePath(format("/api/%s/?(?<remaining>.*)", serviceName), "/${remaining}");
 	}
 }
