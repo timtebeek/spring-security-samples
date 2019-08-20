@@ -13,7 +13,7 @@
 
 	<properties>
 		<spring-cloud-gateway.version>2.2.0.BUILD-SNAPSHOT</spring-cloud-gateway.version>
-		<spring-security.version>5.2.0.BUILD-SNAPSHOT</spring-security.version>
+		<spring-security.version>5.2.0.M3</spring-security.version>
 	</properties>
 
 	<dependencyManagement>
@@ -40,11 +40,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 			<version>${spring-cloud-gateway.version}</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
