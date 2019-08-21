@@ -1,7 +1,9 @@
+server:
+  port: 8080
+
 gateway:
   routes:
     service1: http://localhost:8081
-    service2: http://localhost:8082
 
 spring:
   application:

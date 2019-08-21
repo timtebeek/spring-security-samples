@@ -1,0 +1,28 @@
+server:
+  port: 9080
+
+gateway:
+  routes:
+    service1: http://localhost:9081
+
+spring:
+  application:
+    name: gateway
+  security:
+    oauth2:
+      client:
+        registration:
+          dummy-idp:
+            client-id: gateway
+            client-secret: super-secret-test-key
+            clientName: Dummy
+            authorization-grant-type: authorization_code
+            redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - profile
+        provider:
+          dummy-idp:
+            authorization-uri: http://localhost:9180/dummy-idp-auth
+            token-uri: http://localhost:9180/dummy-idp-token
+            user-info-uri: http://localhost:9180/dummy-idp-userinfo
+            user-name-attribute: username
