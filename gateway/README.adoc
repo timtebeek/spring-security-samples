@@ -5,7 +5,7 @@ Although it is probably pretty clear that an (API) Gateway is meant to be betwee
 The most noticeable differences being mostly related to whether or not the client is a browser-based app and if-so whether or not the app, gateway and/or identify provider (IdP) share the same domain.
 
 To prevent even more complexity the main focus of this exploration of a Gateway is for a browser-based client served from the same domain.
-This basically means the app itself as well as the IdP are served through the gateway.
+This basically means the app itself is served through the gateway. With the IdP on another domain, hiding any login related traffic between the IdP and the browser from the gateway.
 Most parts of this exploration should be usable in other scenarios (native-clients) as well though.
 
 == State of the art
@@ -30,23 +30,27 @@ ____
 
 === OpenID Connect
 
-Another great initiative to leverage OAuth 2 for authentication the https://openid.net/connect/[openid connect] specification, which standardizes
+Another great initiative to leverage OAuth 2 for authentication is the https://openid.net/connect/[openid connect] specification, which standardizes
 [quote, openid connect]
 "a simple identity layer on top of the OAuth 2.0 protocol"
 
-Apart from the _core_ specification it also defines additional useful extensions. https://openid.net/specs/openid-connect-session-1_0.html[session management] to use an OpenID Connect provider to also manage (SSO) sessions.
-Which is out of scope for the intent of this initial Gateway exploration but might be useful for complex scenarios.
+Apart from the _core_ specification it also defines additional useful extensions. https://openid.net/specs/openid-connect-session-1_0.html[Session management] to use an OpenID Connect provider to also manage (SSO) sessions.
+Leveraging cross-origin inter-iframe eventing to receive session updates. Which is not for the faint of heart and obviously out of scope for this initial Gateway exploration but might be useful for complex scenarios.
 
 Furthermore the https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html[multiple-response-types] and https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html[form_post response mode] specs help mitigate the leaking of tokens,
 by moving them out of the query string.
 
+=== Spring (Security)
+
+The OAuth support in the Spring framework is currently receiving a major overhaul, with support for basic `client` and `resource-server` scenarios
+already released in the `spring-security-oauth-...` modules. Version `5.2.0` will contain some https://github.com/spring-projects/spring-security/issues/6811[separation of logic] providing more integration hooks for others to use.
+
 === Summary
 
-For simple scenarios to me this sums up to preferring the `Authorization code` flow with the _code exchange_ step server-side. Using good old session cookie-based AuthN to your browser app if you can.
+For simple scenarios to me this sums up to still preferring the `Authorization code` flow with the _code exchange_ step server-side. Using good old session cookie-based AuthN to your browser app if you can.
 Or if you architecture doesn't support or requires it, doing the entire flow client-side (with the additional requirements) if you must.
 
 With all this in mind, lets see what this actually means when introducing a Gateway and the desire to off-load AuthN/AuthZ as much as possible to an external product.
-
 
 == Keycloak
 
@@ -59,15 +63,14 @@ Allowing anyone to do this complete exercise on their local machine.
 
 Just like the most standard scenario for the OAuth `Authorization code` flow, we could have the gateway serve as typical backend. Taking care of exchanging any authorization code received after login for the actual access and refresh tokens server-side and storing them in a session.
 
-Effectively playing backend for any JavaScript app that it serves. Personally I consider this the easiest option for browser-based apps. Mainly due to simplicity this provides to you client apps.
-However cookies are not really suited for native-apps and require stateful session management and CSRF protection in the Gateway.
+Effectively playing backend for any JavaScript app that it serves. Personally I consider this the easiest option for browser-based apps. Mainly due to simplicity this provides to you client apps. Cookies are less suited for apps though and CSRF protection in most scenarios.
 
-A solution following this architecture using the latest and greatest reactive goodness of Spring Boot, Security, Session and Cloud Gateway can be found at *stateful-oauth-gateway*.
+A solution following this architecture using the latest and greatest reactive goodness of Spring WebFlux and Security can be found at *stateful-gateway*.
+For now the example is not based on `spring-cloud-gateway` as it would only complicate the solution in its current state (see other branch).
 
 == Stateless
 
-Another option would be to embrace doing the `Authorization code` completely client-side and have your IdP and app conform to additional requirements to prevent leaking tokens.
-Basically providing a browser app with the _access_token_ (stored inside the _sessionStore_) and calling the Gateway with
+Another option would be to embrace doing the `Authorization code` completely client-side and have your IdP and app conform to additional requirements to prevent leaking tokens. Basically providing a browser app with the _access_token_ (stored inside the _sessionStore_) and calling the Gateway with
 
 	Authorization: Bearer <access_token>
 
@@ -75,11 +78,12 @@ This way almost anything can serve as the Gateway and transparently proxy the re
 
 Enter https://tools.ietf.org/html/draft-ietf-oauth-token-exchange-19[token-exchange]. Leveraging Keycloak's https://www.keycloak.org/docs/latest/securing_apps/index.html#\_token-exchange[Tech Preview] support for __token exchange__ it should be possible to create a Gateway that dynamically exchanges incoming access tokens representing the user, for an access token intended for internal use, when proxying API calls. The gotcha being that only the Gateway should be authorized to do this exchange, using the same `.../token` endpoint as used by the client app itself to acquire its access token.
 
-A reactive solution following this architecture using the latest and greatest goodness of Spring Boot, Security and Cloud Gateway 2 can be found at *stateless-oauth-gateway*
+Unfortunately Spring Security currently does not https://github.com/spring-projects/spring-security/issues/5199[yet] provide direct support for _token_exhange_.
+When the time is right, this repo will hopefully contain a stateless solution as well. Feel free to contribute your own ;)
 
 === Cookie based tokens
 
-If you want to prevent browser clients from being able to touch/read the `access_token` and dealing with OAuth complexities in general, you could also have the Gateway do the original code exchange or use the https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html[form_post response mode] pointing to the Gateway.
+If you want go the stateless route but prevent javascript in browser clients from being able to touch/read the `access_token` and dealing with OAuth complexities in general, you could also have the Gateway do the original code exchange or use the https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html[form_post response mode] pointing to the Gateway.
 This would allow the Gateway to deliver the tokens as http-only cookies to the client app. Effectively automatically using them when sending requests to the Gateway.
 
 *_note that any cookie-only based solution requires CSRF protection_*

@@ -1,19 +1,23 @@
 = Stateless Gateway
 
-...
-
 == Set-up
 
 The basic set-up we are going for is:
 
 * gateway at localhost:8080
-* service1 at localhost:8081
+* dummy service at localhost:8081
 * keycloak at localhost:8180
 
 run `docker-compose up -d` to start a local keycloak server on port 8180
 
-create a realm called `service` with a client called `gateway` with secret `42aad01b-414e-4a80-8e6d-7b9332b3aebe` and create a user.
+* create a realm called `service` 
+* a client called `gateway` with secret `42aad01b-414e-4a80-8e6d-7b9332b3aebe` (or change the secret in the application.yml) 
+* create a user to login with
 
 run `GatewayApplication` to start the gateway
 
-run `nc -l localhost 8081` to fake a backend service1 to listen to the proxied request.
+run `DummyApplication` to start the service1 dummy backend service
+
+Note that if you just want to look at how a request with token to the backend looks like you could also just run netcat instead of the dummy-service using:
+
+`nc -l localhost 8081`
