@@ -1,4 +1,4 @@
-package com.jdriven.security;
+package com.jdriven.permission;
 
 import java.util.HashSet;
 import java.util.Set;

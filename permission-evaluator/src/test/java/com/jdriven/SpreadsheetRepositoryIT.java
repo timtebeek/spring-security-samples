@@ -3,8 +3,8 @@ package com.jdriven;
 import java.util.Collections;
 
 import com.jdriven.model.Spreadsheet;
-import com.jdriven.security.Permission;
-import com.jdriven.security.PermissionStore;
+import com.jdriven.permission.Permission;
+import com.jdriven.permission.PermissionStore;
 import com.jdriven.service.SpreadsheetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
