@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
-class SpreadsheetPermissionEvaluatorIT {
+class CustomPermissionEvaluatorIT {
 
 	@Autowired
 	private SpreadsheetPermissionStore store;
