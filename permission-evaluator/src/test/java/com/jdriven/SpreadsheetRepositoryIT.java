@@ -30,7 +30,9 @@ class SpreadsheetRepositoryIT {
 	void setup() {
 		User alice = new User("alice", "", Collections.emptyList());
 		User bob = new User("bob", "", Collections.emptyList());
-		spreadsheet = new Spreadsheet(123L, "alice's spreadsheet", alice);
+		spreadsheet = new Spreadsheet(123L, "alice's spreadsheet");
+		store.getPermissions().add(new Permission(alice, spreadsheet, "READ"));
+		store.getPermissions().add(new Permission(alice, spreadsheet, "WRITE"));
 		store.getPermissions().add(new Permission(bob, spreadsheet, "READ"));
 	}
 

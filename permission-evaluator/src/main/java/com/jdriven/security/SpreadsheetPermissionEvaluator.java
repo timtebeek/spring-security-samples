@@ -21,8 +21,7 @@ public class SpreadsheetPermissionEvaluator implements PermissionEvaluator {
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object accessLevel) {
 		Spreadsheet spreadsheet = (Spreadsheet) targetDomainObject;
 		User principal = (User) authentication.getPrincipal();
-		boolean isOwner = spreadsheet.getOwner().equals(principal);
-		boolean hasPermission = isOwner || store.getPermissions().stream().anyMatch(p -> p.getUser().equals(principal)
+		boolean hasPermission = store.getPermissions().stream().anyMatch(p -> p.getUser().equals(principal)
 				&& p.getSpreadsheet().equals(spreadsheet)
 				&& p.getLevel().equals(accessLevel));
 		if (!hasPermission) {
@@ -43,9 +42,7 @@ public class SpreadsheetPermissionEvaluator implements PermissionEvaluator {
 		}
 
 		User principal = (User) authentication.getPrincipal();
-		boolean isOwner = store.getPermissions().stream().anyMatch(
-				p -> p.getSpreadsheet().getId().equals(targetId) && p.getSpreadsheet().getOwner().equals(principal));
-		boolean hasPermission = isOwner || store.getPermissions().stream().anyMatch(p -> p.getUser().equals(principal)
+		boolean hasPermission = store.getPermissions().stream().anyMatch(p -> p.getUser().equals(principal)
 				&& p.getSpreadsheet().getId().equals(targetId)
 				&& p.getLevel().equals(accessLevel));
 		if (!hasPermission) {
