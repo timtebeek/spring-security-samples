@@ -36,7 +36,6 @@ public class SpreadsheetAccessDecisionVoter extends AbstractAclVoter {
 				Spreadsheet domainObjectInstance = (Spreadsheet) getDomainObjectInstance(methodInvocation);
 				return hasSpreadsheetAccess(principal, domainObjectInstance) ? ACCESS_GRANTED : ACCESS_DENIED;
 			}
-			log.info("{} unsupported by {}", configAttribute, getProcessDomainObjectClass());
 		}
 		return ACCESS_ABSTAIN;
 	}
