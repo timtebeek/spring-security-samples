@@ -3,8 +3,6 @@ package com.jdriven.permission;
 import java.util.Collections;
 
 import com.jdriven.model.Spreadsheet;
-import com.jdriven.permission.SpreadsheetPermission;
-import com.jdriven.permission.SpreadsheetPermissionStore;
 import com.jdriven.service.SpreadsheetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +56,19 @@ class CustomPermissionEvaluatorIT {
 	@WithMockUser("alice")
 	void testAliceAllowedToWriteSpreadsheetById() {
 		service.writeById(spreadsheet.getId());
+	}
+
+	@Test
+	@WithMockUser("alice")
+	void testAliceNotAllowedToReadAnotherSpreadsheet() {
+		Spreadsheet anotherSpreadsheet = new Spreadsheet(456L, "another spreadsheet");
+		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
+	}
+
+	@Test
+	@WithMockUser("alice")
+	void testAliceNotAllowedToReadAnotherSpreadsheetById() {
+		Assertions.assertThrows(AccessDeniedException.class, () -> service.readById(456L));
 	}
 
 	@Test
