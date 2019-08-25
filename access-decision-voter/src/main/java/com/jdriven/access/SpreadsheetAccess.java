@@ -1,4 +1,4 @@
-package com.jdriven.permission;
+package com.jdriven.access;
 
 import com.jdriven.model.Spreadsheet;
 import lombok.Value;
