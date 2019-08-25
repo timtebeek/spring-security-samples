@@ -40,6 +40,13 @@ class SpreadsheetAccessDecisionVoterIT {
 	}
 
 	@Test
+	@WithMockUser("alice")
+	void testAliceNotAllowedToReadAnotherSpreadsheet() {
+		Spreadsheet anotherSpreadsheet = new Spreadsheet(345L, "another spreadsheet");
+		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
+	}
+
+	@Test
 	@WithMockUser("bob")
 	void testBobAllowedToReadSpreadsheet() {
 		service.read(spreadsheet);
