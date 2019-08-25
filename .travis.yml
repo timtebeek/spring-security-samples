@@ -1,4 +1,12 @@
 language: java
 jdk:
   - openjdk11
-script: "mvn verify"
+
+addons:
+  sonarcloud:
+    organization: "timtebeek"
+    token:
+      secure: "EDQ+MtZ9GJI0zvp3WURf9i0SILgr0+JmRppbR5XDJR03hRftRu2Tj0csVpC0m+ta7tcZ8E0lo4WjNsI6twMv5jjt2LRo35R4fkfSaFFhLTcHv3qbGSqQIVgeP2ZQOsT8nBB9//2vv5XWqB9/1T+AURz51CH18ir2rF+v12w5AAOJqLVIIxA+Xk+IsLUMiPYjOw85pOfk3TxANFc6wjsFYhnWLNJTutTdXx/k/4vS1pdiCDdO372pwuvFmrexbC9uEfq/UK3lBmLSLHUQ68fk3EiMeyfj6aPiCkp3R+OWAJpegwB8xyoiwYvmFc9MSD7vIi9xfzcabH0xuk4/lId1p9HIZaaaxBcLhx9KUehT2rhyJGuD8hrpqBdWCu+vXm5rwMqyHhrTY5qDVLmvGmG/L/QzQUKUU6rqIsUK8ZoazlFspkO2U4Kf9B8qLcgJ5XKmUN0s3XI7jLWfLUO7ttY9cfX2Lv0ynms8sHL1VFAgDA/0LRHpHE4xjozW76O6wPd0oCw5yunzGzgrSZYhoYRs/RmEx2Lkik1YMTFMpHGjwLPXcGjqVyqasZN9I6tYYM1UesM9QQNQNn3o5EA95HU6ETnNvtuisxf2coKEAsgokuSwEvvJ1sTD190bGTzCXfp7suuAGhjxnQ39cJstMY4WuzXzsMhwRxaxwt03CcnxHOs="
+
+script:
+  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar
