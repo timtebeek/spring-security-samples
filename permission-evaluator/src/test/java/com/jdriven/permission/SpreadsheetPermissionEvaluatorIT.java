@@ -1,4 +1,4 @@
-package com.jdriven;
+package com.jdriven.permission;
 
 import java.util.Collections;
 
@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
-class SpreadsheetRepositoryIT {
+class SpreadsheetPermissionEvaluatorIT {
 
 	@Autowired
 	private PermissionStore store;
