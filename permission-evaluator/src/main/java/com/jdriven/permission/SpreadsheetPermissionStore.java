@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Value
-public class PermissionStore {
+public class SpreadsheetPermissionStore {
 
-	private Set<Permission> permissions = new HashSet<>();
+	private Set<SpreadsheetPermission> permissions = new HashSet<>();
 
 }

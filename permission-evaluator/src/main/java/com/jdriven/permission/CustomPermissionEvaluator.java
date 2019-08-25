@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomPermissionEvaluator implements PermissionEvaluator {
 
-	private final PermissionStore store;
+	private final SpreadsheetPermissionStore store;
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {

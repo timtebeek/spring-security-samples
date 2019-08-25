@@ -5,7 +5,7 @@ import lombok.Value;
 import org.springframework.security.core.userdetails.User;
 
 @Value
-public class Permission {
+public class SpreadsheetPermission {
 	User user;
 	Spreadsheet spreadsheet;
 	String level;

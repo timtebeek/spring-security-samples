@@ -3,8 +3,8 @@ package com.jdriven.permission;
 import java.util.Collections;
 
 import com.jdriven.model.Spreadsheet;
-import com.jdriven.permission.Permission;
-import com.jdriven.permission.PermissionStore;
+import com.jdriven.permission.SpreadsheetPermission;
+import com.jdriven.permission.SpreadsheetPermissionStore;
 import com.jdriven.service.SpreadsheetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 class SpreadsheetPermissionEvaluatorIT {
 
 	@Autowired
-	private PermissionStore store;
+	private SpreadsheetPermissionStore store;
 
 	@Autowired
 	private SpreadsheetService service;
@@ -31,9 +31,9 @@ class SpreadsheetPermissionEvaluatorIT {
 		User alice = new User("alice", "", Collections.emptyList());
 		User bob = new User("bob", "", Collections.emptyList());
 		spreadsheet = new Spreadsheet(123L, "alice's spreadsheet");
-		store.getPermissions().add(new Permission(alice, spreadsheet, "READ"));
-		store.getPermissions().add(new Permission(alice, spreadsheet, "WRITE"));
-		store.getPermissions().add(new Permission(bob, spreadsheet, "READ"));
+		store.getPermissions().add(new SpreadsheetPermission(alice, spreadsheet, "READ"));
+		store.getPermissions().add(new SpreadsheetPermission(alice, spreadsheet, "WRITE"));
+		store.getPermissions().add(new SpreadsheetPermission(bob, spreadsheet, "READ"));
 	}
 
 	@Test
