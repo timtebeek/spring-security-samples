@@ -10,14 +10,23 @@ The basic set-up we are going for is:
 
 run `docker-compose up -d` to start a local keycloak server on port 8180
 
+== Keycloak
+
+Browse to http://localhost:8180
+
 * create a realm called `service` 
-* a client called `gateway` with secret `42aad01b-414e-4a80-8e6d-7b9332b3aebe` (or change the secret in the application.yml) 
-* create a user to login with
+* a client called `gateway`
+** use `valid redirect url`: `http://localhost:8080/*`
+** select `Access Type`: `confidential`
+** `save` and click on the newly visible tab `Credentials`
+* Copy the `Secret` to the `client-secret` in the gateway application.yml
+* create a user for yourself to login with
+* create a role called `dummy` and assign it to your user
 
 run `GatewayApplication` to start the gateway
 
 run `DummyApplication` to start the service1 dummy backend service
 
-Note that if you just want to look at how a request with token to the backend looks like you could also just run netcat instead of the dummy-service using:
+Note that if you just want to look at how a request with token to the backend looks like you could also just run _netcat_ instead of the dummy-service using:
 
 `nc -l localhost 8081`

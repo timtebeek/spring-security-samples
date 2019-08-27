@@ -4,6 +4,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -14,11 +15,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
-//			.antMatchers("/**").hasAuthority("SCOPE_message:read")
+
+			// require the user to have the "dummy" role
+			.antMatchers("/**").hasRole("dummy")
+
 			.anyRequest().authenticated()
 			.and()
 			.httpBasic().disable()
 			.oauth2ResourceServer()
-			.jwt();
+			.jwt()
+			.jwtAuthenticationConverter(jwtAuthenticationConverter());
+	}
+
+	JwtAuthenticationConverter jwtAuthenticationConverter() {
+		final JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
+		return jwtAuthenticationConverter;
 	}
 }
