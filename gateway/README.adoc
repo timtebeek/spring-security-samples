@@ -86,4 +86,4 @@ When the time is right, this repo will hopefully contain a stateless solution as
 If you want go the stateless route but prevent javascript in browser clients from being able to touch/read the `access_token` and dealing with OAuth complexities in general, you could also have the Gateway do the original code exchange or use the https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html[form_post response mode] pointing to the Gateway.
 This would allow the Gateway to deliver the tokens as http-only cookies to the client app. Effectively automatically using them when sending requests to the Gateway.
 
-*_note that any cookie-only based solution requires CSRF protection_*
+NOTE: any cookie-only based solution requires CSRF protection.
