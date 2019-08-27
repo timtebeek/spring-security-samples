@@ -1,4 +1,4 @@
-= Stateless Gateway
+= Stateful Gateway
 
 == Set-up
 
