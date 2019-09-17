@@ -1,0 +1,87 @@
+= Custom access decision voter
+
+You might have a need for a custom access decision voter when security decisions are made based on who is accessing what domain object.
+Luckily Spring Security has quite a few options for such implement such access control list (ACL) constraints.
+
+== Implementation
+We'll explore a system where users share spreadsheets, with access per spreadsheet stored separately.
+We've explicitly modeled the permission storage as simple as can be; imagine it's calling out to a system of record elsewhere.
+Note that in this simplified implementation, access decisions are binary: you either have access or you don't.
+There's no distinction between READ/WRITE access in this implementation.
+
+=== Secured annotation
+Opening `SpreadsheetService` reveals a single method annotated with `@Secured`.
+
+```java
+@Secured("com.jdriven.model.Spreadsheet")
+public void read(Spreadsheet spreadsheet) {
+	log.info("Reading {}", spreadsheet);
+}
+```
+
+The `@Secured` annotation argument is the fully qualified class name of the domain object access we are aiming to restrict.
+The method has an argument of the same type, which is the specific instance we'll secure.
+
+Conveniently the `@Secured` annotation need not reference the argument by name; it can be retrieved by type alone in our `AccessDecisionVoter`.
+
+=== AccessDecisionVoter
+Access decisions are made by an `AccessDecisionManager`, which delegates out to a list of configured `AccessDecisionVoters`.
+Voters can choose to *GRANT* or *DENY* a particular method invocation, based on their application logic.
+If a voter can not decide on a particular method invocation, it can choose to *ABSTAIN* to leave the decision up to further voters.
+By default you'll get the `AffirmativeBased` access decision manager, which allows a method invocation _if just one of the voters_ votes to *GRANT* access, regardless of any votes to *DENY* access.
+
+Four our purposes we want a custom voter that validates user access to a spreadsheet against the stored access records.
+We do so by extending `AbstractAclVoter`, which for a configured processed domain object class and method invocation can look up the argument domain object instance.
+We'll implement the `vote` method, which is passed the authenticated user, the secured `MethodInvocation` and a collection of `ConfigAttributes`.
+```java
+@Override
+public int vote(Authentication authentication, MethodInvocation methodInvocation, Collection<ConfigAttribute> attributes) {
+	for (ConfigAttribute configAttribute : attributes) {
+		if (supports(configAttribute)) {
+			User principal = (User) authentication.getPrincipal();
+			Spreadsheet domainObjectInstance = (Spreadsheet) getDomainObjectInstance(methodInvocation);
+			return hasSpreadsheetAccess(principal, domainObjectInstance) ? ACCESS_GRANTED : ACCESS_DENIED;
+		}
+	}
+	return ACCESS_ABSTAIN;
+}
+```
+Our voter is passed one or more `ConfigAttributes`, as passed to the `@Secured` annotation itself, which we validate by calling `boolean supports(ConfigAttribute)`:
+```java
+@Override
+public boolean supports(ConfigAttribute attribute) {
+	return getProcessDomainObjectClass().getName().equals(attribute.getAttribute());
+}
+```
+Given these implementations, the voter will *ABSTAIN* only when the `ConfigAttribute` does not match the configured `ProcessDomainObjectClass`.
+In all other cases the voter will vote to *GRANT* or *DENY* access, according to the access records stored.
+
+=== Configuration
+We need to configure two parts of our application for our custom access decision voter logic to trigger.
+
+Firstly, we need to activate the `@Secured` annotations through `@EnableGlobalMethodSecurity(securedEnabled = true)`, which is done in `AccessDecisionConfiguration`.
+
+Secondly, we need to add our `SpreadsheetAccessDecisionVoter` to the list of decision voters considered by the `AccessDecisionManager`.
+For this we extend `GlobalMethodSecurityConfiguration` to override `AccessDecisionManager accessDecisionManager()`.
+We call `super.accessDecisionManager()` to get the default `AffirmativeBased` access decision manager, and merely add our own voter at the end.
+
+Should you have a need to secure more than one domain object type, it's easy enough to add more voters to the list.
+
+=== Tests
+Our `SpreadsheetAccessDecisionVoterIT` tests use mock users _Alice_ and _Bob_, with a malicious third user _Eve_, all trying to access a single spreadsheet.
+
+You can see access to the spreadsheet abides by the rules stored at the start of each test:
+
+- _Alice_ is able to access the spreadsheet.
+- _Bob_ is also able to access the spreadsheet.
+- _Eve_ is unable to access the spreadsheet, as she gets an `AccessDeniedException`.
+
+
+== Alternatives
+For highly customizable access storage you might adopt https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
+This provides a very powerful method of encoding, storing and retrieving access permissions.
+
+== References
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#tech-intro-access-control[Access-Control (Authorization) in Spring Security]
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-method[Method Security]
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#authorization[Authorization]
