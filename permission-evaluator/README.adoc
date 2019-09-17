@@ -1,0 +1,70 @@
+= Custom permission evaluator
+
+Often you'll find access decisions move beyond simplistic ownership or having a certain role, for instance when users share domain objects with other users.
+In such cases it's common to separate permission to view an instance from being able to make changes to the same instance.
+When your access rules are relatively straightforward, Spring Security offers the `PermissionEvaluator` interface to secure instance access.
+
+== Implementation
+We'll explore a system where users share spreadsheets, with permissions to view/edit stored separately.
+We've explicitly modeled the permission storage as simple as can be; imagine it's calling out to a system of record elsewhere.
+
+=== Security expressions
+Opening `SpreadsheetService` reveals four methods with different arguments, each annotated with `@PreAuthorize`.
+The expressions passed into `@PreAuthorize` refer to method arguments by name, and use the built in `hasPermission(...)`.
+
+```java
+@PreAuthorize("hasPermission(#spreadsheet, 'READ')")
+public void read(Spreadsheet spreadsheet) {
+	log.info("Reading {}", spreadsheet);
+}
+
+@PreAuthorize("hasPermission(#id, 'com.jdriven.model.Spreadsheet', 'READ')")
+public void readById(Long id) {
+	log.info("Reading Spreadsheet id {} ", id);
+}
+```
+
+The https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#el-common-built-in[`hasPermission` methods return `true` if the user has access to the provided target for the given permission].
+
+=== PermissionEvaluator
+The default `SecurityExpressionHandler` delegates `hasPermission` invocations to a unique  `PermissionEvaluator` bean, if configured.
+If no `PermissionEvaluator` bean is provided, it will fallback to the `DenyAllPermissionEvaluator` to prevent method invocations.
+
+So, in order to make our own access decisions we have to implement the `PermissionEvaluator` interface and provide a bean instance.
+The interface has the following methods:
+```java
+public interface PermissionEvaluator extends AopInfrastructureBean {
+
+	boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission);
+
+	boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission);
+
+}
+```
+From the interface method arguments it should be clear how these map to security expression arguments.
+
+NOTE: You can only provide a single `PermissionEvaluator` bean, so if you want to support several target types, you'll have to handle that within a single instance.
+
+We've provided an `CustomPermissionEvaluator` implementation to serve as an example.
+It first checks the target domain object type, before calling out to the appropriate permission store to check for access.
+The access rules here are modeled quite simply, but you can extend this as much as needed for your domain.
+
+Lastly, the `@PreAuthorize` annotations need to be activated through `@EnableGlobalMethodSecurity(prePostEnabled = true)`, which is done in `PermissionEvaluatorConfiguration`.
+
+=== Tests
+Our `CustomPermissionEvaluatorIT` tests use mock users _Alice_ and _Bob_, with a malicious third user _Eve_, all trying to read and write a single spreadsheet.
+
+You can see access to the spreadsheet abides by the access permissions stored at the start of each test:
+
+- _Alice_ is able to both *READ* and *WRITE* the spreadsheet.
+- _Bob_ is able to *READ* the spreadsheet, but get's an `AccessDeniedException` when he tried to *WRITE*.
+- _Eve_ always gets an `AccessDeniedException`.
+
+
+== Alternatives
+You can achieve much of the same functionality, by extending `AbstractAclVoter`, discussed separately.
+For highly customizable access rules you might even adopt https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
+This provides a very powerful method of encoding, storing and retrieving access permissions.
+
+== References
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#el-permission-evaluator[The PermissionEvaluator interface]
