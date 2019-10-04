@@ -21,7 +21,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			.anyRequest().authenticated()
 			.and()
-			.httpBasic().disable()
 			.oauth2ResourceServer()
 			.jwt()
 			.jwtAuthenticationConverter(jwtAuthenticationConverter());

@@ -4,7 +4,6 @@ spring:
   application:
     name: dummy-service
   security:
-    basic.enabled: false
     oauth2:
       resourceserver:
         jwt:
