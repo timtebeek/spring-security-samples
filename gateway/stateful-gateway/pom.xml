@@ -12,7 +12,7 @@
 	<artifactId>stateful-gateway</artifactId>
 
 	<properties>
-		<spring-security.version>5.2.0.M4</spring-security.version>
+	 <!-- make sure mockwebserver has property transitive dependencies -->
 		<okhttp3.version>4.1.0</okhttp3.version>
 	</properties>
 

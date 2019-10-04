@@ -24,8 +24,8 @@ spring:
               - email
         provider:
           keycloak:
-            authorization-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/auth
-            token-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/token
-            user-info-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/userinfo
-            jwk-set-uri: http://localhost:8180/auth/realms/service/protocol/openid-connect/certs
+            authorization-uri: http://localhost:9090/auth/realms/service/protocol/openid-connect/auth
+            token-uri: http://localhost:9090/auth/realms/service/protocol/openid-connect/token
+            user-info-uri: http://localhost:9090/auth/realms/service/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:9090/auth/realms/service/protocol/openid-connect/certs
             user-name-attribute: preferred_username

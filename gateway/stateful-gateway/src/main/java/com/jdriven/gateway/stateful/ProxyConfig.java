@@ -45,7 +45,7 @@ public class ProxyConfig {
 
 	@Bean
 	public RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
-		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).syncBody(index));
+		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
 	}
 
 	@Bean
