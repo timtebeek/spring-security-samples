@@ -12,7 +12,7 @@ import java.util.Map;
 public class HelloController {
 
 	@GetMapping("/hello")
-	Map<String, String> hello(final @AuthenticationPrincipal Jwt jwt) {
+	public Map<String, String> hello(final @AuthenticationPrincipal Jwt jwt) {
 		System.out.println("Reached 'hello' endpoint with jwt claims: " + jwt.getClaims());
 		return Collections.singletonMap("message", "Hello " + jwt.getClaimAsString("name"));
 	}
