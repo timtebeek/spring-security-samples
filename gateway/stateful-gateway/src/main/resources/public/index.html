@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<script language="JavaScript">
+		// treat redirect requests as error, so we can manually point the browser to login screen
+		fetch('/api/service1/hello', {redirect: 'error'})
+		.then(function(result) {
+			result.json().then(function(response) {
+				alert(response.message);
+			});
+		}, function(error) {
+			window.location = 'http://localhost:8080/oauth2/authorization/keycloak';
+		});
+	</script>
+	<title>Simple Frontend</title>
+</head>
+</html>
