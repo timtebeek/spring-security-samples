@@ -13,7 +13,8 @@ public class HelloController {
 
 	@GetMapping("/hello")
 	public Map<String, String> hello(final @AuthenticationPrincipal Jwt jwt) {
-		System.out.println("Reached 'hello' endpoint with jwt claims: " + jwt.getClaims());
+		System.out.println("claims:\n" + jwt.getClaims());
+		System.out.println("\nheaders:\n" + jwt.getHeaders());
 		return Collections.singletonMap("message", "Hello " + jwt.getClaimAsString("name"));
 	}
 }
