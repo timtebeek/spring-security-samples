@@ -12,12 +12,13 @@ There's no distinction between READ/WRITE access in this implementation.
 === Secured annotation
 Opening `SpreadsheetService` reveals a single method annotated with `@Secured`.
 
-```java
+[source,java]
+----
 @Secured("com.jdriven.model.Spreadsheet")
 public void read(Spreadsheet spreadsheet) {
-	log.info("Reading {}", spreadsheet);
+  log.info("Reading {}", spreadsheet);
 }
-```
+----
 
 The `@Secured` annotation argument is the fully qualified class name of the domain object access we are aiming to restrict.
 The method has an argument of the same type, which is the specific instance we'll secure.
@@ -33,26 +34,28 @@ By default you'll get the `AffirmativeBased` access decision manager, which allo
 Four our purposes we want a custom voter that validates user access to a spreadsheet against the stored access records.
 We do so by extending `AbstractAclVoter`, which for a configured processed domain object class and method invocation can look up the argument domain object instance.
 We'll implement the `vote` method, which is passed the authenticated user, the secured `MethodInvocation` and a collection of `ConfigAttributes`.
-```java
+[source,java]
+----
 @Override
 public int vote(Authentication authentication, MethodInvocation methodInvocation, Collection<ConfigAttribute> attributes) {
-	for (ConfigAttribute configAttribute : attributes) {
-		if (supports(configAttribute)) {
-			User principal = (User) authentication.getPrincipal();
-			Spreadsheet domainObjectInstance = (Spreadsheet) getDomainObjectInstance(methodInvocation);
-			return hasSpreadsheetAccess(principal, domainObjectInstance) ? ACCESS_GRANTED : ACCESS_DENIED;
-		}
-	}
-	return ACCESS_ABSTAIN;
+  for (ConfigAttribute configAttribute : attributes) {
+    if (supports(configAttribute)) {
+      User principal = (User) authentication.getPrincipal();
+      Spreadsheet domainObjectInstance = (Spreadsheet) getDomainObjectInstance(methodInvocation);
+      return hasSpreadsheetAccess(principal, domainObjectInstance) ? ACCESS_GRANTED : ACCESS_DENIED;
+    }
+  }
+  return ACCESS_ABSTAIN;
 }
-```
+----
 Our voter is passed one or more `ConfigAttributes`, as passed to the `@Secured` annotation itself, which we validate by calling `boolean supports(ConfigAttribute)`:
-```java
+[source,java]
+----
 @Override
 public boolean supports(ConfigAttribute attribute) {
-	return getProcessDomainObjectClass().getName().equals(attribute.getAttribute());
+  return getProcessDomainObjectClass().getName().equals(attribute.getAttribute());
 }
-```
+----
 Given these implementations, the voter will *ABSTAIN* only when the `ConfigAttribute` does not match the configured `ProcessDomainObjectClass`.
 In all other cases the voter will vote to *GRANT* or *DENY* access, according to the access records stored.
 

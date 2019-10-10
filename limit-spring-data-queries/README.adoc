@@ -19,44 +19,49 @@ We define a `PreferencesRepository` with the typical Spring Data `save(Preferenc
 
 When saving `Preferences` we want to make sure the record affected belongs to the active user.
 For this we can use the `@PreAuthorize` annotation with a custom security expression.
-```java
+[source,java]
+----
 @PreAuthorize("#entity.user.name == authentication.name")
 Preferences save(Preferences entity);
-```
+----
 When this method is invoked, Spring Security will evaluate the security expression and either allow or reject the method call.
 
 Similarly, when retrieving preferences by ID, we want to ensure that the returned preferences belong to the active user.
 As we can not authorize on the ID argument, we can only validate access on the `Preferences` instance itself.
 In order to inspect the `Preferences` we need the method to execute first either way. For this we can use `@PostAuthorize`.
-```java
+[source,java]
+----
 @PostAuthorize("returnObject != null and returnObject.user.name == authentication.name")
 Preferences findById(Long id);
-```
+----
 While the record will be retrieved from the database, it is only returned to the active user if the security expression evaluates to `true`.
 
 TIP: Make sure to only use the `@PostAuthorize` on methods that do not make modifications, generate events etc. As the method will always execute regardless of authorization.
 
 Lastly, we need to have Spring Security intercept calls to methods with these annotations, using the following configuration.
-```java
+[source,java]
+----
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-```
+----
 
 === Limit query result
 
 The integration between Spring Security and Spring Data even allows us a have a no-argument method return only the data for the active user.
 To set this up we first need to enable using Spring Security expressions with in Spring Data `@Query` annotations.
-```java
+[source,java]
+----
 @Bean
 public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-	return new SecurityEvaluationContextExtension();
+  return new SecurityEvaluationContextExtension();
 }
-```
+----
 
 After that we can define a custom `@Query` which can pull information from the `principal` or `authentication`.
-```java
+[source,java]
+----
 @Query("select p from #{#entityName} p where p.user.name = ?#{ authentication.name }")
 Optional<Preferences> findUserPreferences();
-```
+----
 
 === Limit collection access
 

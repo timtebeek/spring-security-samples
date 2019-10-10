@@ -12,17 +12,18 @@ We've explicitly modeled the permission storage as simple as can be; imagine it'
 Opening `SpreadsheetService` reveals four methods with different arguments, each annotated with `@PreAuthorize`.
 The expressions passed into `@PreAuthorize` refer to method arguments by name, and use the built in `hasPermission(...)`.
 
-```java
+[source,java]
+----
 @PreAuthorize("hasPermission(#spreadsheet, 'READ')")
 public void read(Spreadsheet spreadsheet) {
-	log.info("Reading {}", spreadsheet);
+  log.info("Reading {}", spreadsheet);
 }
 
 @PreAuthorize("hasPermission(#id, 'com.jdriven.model.Spreadsheet', 'READ')")
 public void readById(Long id) {
-	log.info("Reading Spreadsheet id {} ", id);
+  log.info("Reading Spreadsheet id {} ", id);
 }
-```
+----
 
 The https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#el-common-built-in[`hasPermission` methods return `true` if the user has access to the provided target for the given permission].
 
@@ -32,15 +33,16 @@ If no `PermissionEvaluator` bean is provided, it will fallback to the `DenyAllPe
 
 So, in order to make our own access decisions we have to implement the `PermissionEvaluator` interface and provide a bean instance.
 The interface has the following methods:
-```java
+[source,java]
+----
 public interface PermissionEvaluator extends AopInfrastructureBean {
 
-	boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission);
+  boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission);
 
-	boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission);
+  boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission);
 
 }
-```
+----
 From the interface method arguments it should be clear how these map to security expression arguments.
 
 NOTE: You can only provide a single `PermissionEvaluator` bean, so if you want to support several target types, you'll have to handle that within a single instance.

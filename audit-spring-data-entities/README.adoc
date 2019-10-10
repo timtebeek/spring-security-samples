@@ -9,26 +9,30 @@ This project only looks at persistence and setting the audit metadata.
 It uses the active user to lookup an `Author` when saving a `Blogpost` entity.
 
 === Entities & repositories
+
 The `Author` class extends `AbstractPersistable` to get a generated primary key with proper `equals(Object)` and `hashCode()` implementations.
-```java
+
+[source,java]
+----
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Author extends AbstractPersistable<Long> {
-	private String name;
+  private String name;
 
-	@CreatedDate
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDate;
+  @CreatedDate
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createdDate;
 }
-```
+----
 
 The `BlogPost` class in turn extends `AbstractAuditable` with type arguments `<Author, Long>`, to add `Author createdBy()` and `Date createdDate()`, as well as `Author modifiedBy()` and `Date modifiedDate()` methods.
 In the database the relation between `BlogPost` and `Author` tables will be captured as a foreign key.
 
-```java
+[source,java]
+----
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -36,12 +40,12 @@ In the database the relation between `BlogPost` and `Author` tables will be capt
 @ToString(callSuper = true)
 public class Blogpost extends AbstractAuditable<Author, Long> {
 
-	private String title;
-	private String content;
-	private boolean published;
+  private String title;
+  private String content;
+  private boolean published;
 
 }
-```
+----
 
 Both entities are annotated with `@EntityListeners(AuditingEntityListener.class)`, which is a JPA entity listener to capture auditing information on persisting and updating entities.
 
@@ -52,22 +56,22 @@ Our repositories merely extend the Spring Data `Repository` interface to define 
 We define a `AuditSecurityConfiguration` class, which we annotate with `@EnableJpaAuditing` to enable auditing in JPA via annotation configuration.
 This will trigger Spring Data into setting the audit metadata on your entities.
 
-```java
+[source,java]
+----
 @Configuration
 @EnableJpaAuditing
 public class AuditSecurityConfiguration {
-	@Bean
-	AuditorAware<Author> auditorAware(AuthorRepository repo) {
-		// Lookup Author instance corresponding to logged in user
-		return () -> Optional.ofNullable(SecurityContextHolder.getContext())
-				.map(SecurityContext::getAuthentication)
-				.filter(Authentication::isAuthenticated)
-				.map(Authentication::getName)
-				.flatMap(repo::findByName);
-	}
+  @Bean
+  AuditorAware<Author> auditorAware(AuthorRepository repo) {
+    // Lookup Author instance corresponding to logged in user
+    return () -> Optional.ofNullable(SecurityContextHolder.getContext())
+      .map(SecurityContext::getAuthentication)
+      .filter(Authentication::isAuthenticated)
+      .map(Authentication::getName)
+      .flatMap(repo::findByName);
+  }
 }
-```
-
+----
 
 The `AuditSecurityConfiguration` class defines a single `AuditorAware<Author>` bean, needed to lookup the `Author` entity corresponding to the active user.
 Note that the return type matches the auditing type argument set on the `Blogpost` class.
