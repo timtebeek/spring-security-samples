@@ -1,4 +1,4 @@
-= Custom access decision voter
+= Custom Access Decision Voter
 
 You might have a need for a custom access decision voter when security decisions are made based on who is accessing what domain object.
 Luckily Spring Security has quite a few options for such implement such access control list (ACL) constraints.
@@ -78,10 +78,10 @@ You can see access to the spreadsheet abides by the rules stored at the start of
 
 
 == Alternatives
-For highly customizable access storage you might adopt https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
+For highly customizable access storage you might adopt https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
 This provides a very powerful method of encoding, storing and retrieving access permissions.
 
 == References
-https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#tech-intro-access-control[Access-Control (Authorization) in Spring Security]
-https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-method[Method Security]
-https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#authorization[Authorization]
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#tech-intro-access-control[Access-Control (Authorization) in Spring Security] +
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#jc-method[Method Security] +
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#authorization[Authorization] +

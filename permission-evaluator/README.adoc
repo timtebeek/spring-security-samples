@@ -1,4 +1,4 @@
-= Custom permission evaluator
+= Custom Permission Evaluator
 
 Often you'll find access decisions move beyond simplistic ownership or having a certain role, for instance when users share domain objects with other users.
 In such cases it's common to separate permission to view an instance from being able to make changes to the same instance.
@@ -24,7 +24,7 @@ public void readById(Long id) {
 }
 ```
 
-The https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#el-common-built-in[`hasPermission` methods return `true` if the user has access to the provided target for the given permission].
+The https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#el-common-built-in[`hasPermission` methods return `true` if the user has access to the provided target for the given permission].
 
 === PermissionEvaluator
 The default `SecurityExpressionHandler` delegates `hasPermission` invocations to a unique  `PermissionEvaluator` bean, if configured.
@@ -63,8 +63,8 @@ You can see access to the spreadsheet abides by the access permissions stored at
 
 == Alternatives
 You can achieve much of the same functionality, by extending `AbstractAclVoter`, discussed separately.
-For highly customizable access rules you might even adopt https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
+For highly customizable access rules you might even adopt https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#domain-acls[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
 This provides a very powerful method of encoding, storing and retrieving access permissions.
 
 == References
-https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#el-permission-evaluator[The PermissionEvaluator interface]
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#el-permission-evaluator[The PermissionEvaluator interface]
