@@ -9,15 +9,41 @@ This project only looks at persistence and setting the audit metadata.
 It uses the active user to lookup an `Author` when saving a `Blogpost` entity.
 
 === Entities & repositories
-We extend two Spring Data JPA classes for ease of use:
+The `Author` class extends `AbstractPersistable` to get a generated primary key with proper `equals(Object)` and `hashCode()` implementations.
+```java
+@Data
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class Author extends AbstractPersistable<Long> {
+	private String name;
 
-- `class Author extends AbstractPersistable<Long>`
-- `class Blogpost extends AbstractAuditable<Author, Long>`
+	@CreatedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDate;
+}
+```
 
-Both entities are annotated with `@EntityListeners(AuditingEntityListener.class)`, which is a JPA entity listener to capture auditing information on persiting and updating entities.
+The `BlogPost` class in turn extends `AbstractAuditable` with type arguments `<Author, Long>`, to add `Author createdBy()` and `Date createdDate()`, as well as `Author modifiedBy()` and `Date modifiedDate()` methods.
+In the database the relation between `BlogPost` and `Author` tables will be captured as a foreign key.
 
-The `Blogpost` class extends `AbstractAuditable` with an `Author` auditing type argument.
-In the database this relation will be captured as a foreign key to the `Author` table.
+```java
+@Data
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class Blogpost extends AbstractAuditable<Author, Long> {
+
+	private String title;
+	private String content;
+	private boolean published;
+
+}
+```
+
+Both entities are annotated with `@EntityListeners(AuditingEntityListener.class)`, which is a JPA entity listener to capture auditing information on persisting and updating entities.
 
 Our repositories merely extend the Spring Data `Repository` interface to define the `save` and `findByName` methods.
 
@@ -25,6 +51,23 @@ Our repositories merely extend the Spring Data `Repository` interface to define 
 
 We define a `AuditSecurityConfiguration` class, which we annotate with `@EnableJpaAuditing` to enable auditing in JPA via annotation configuration.
 This will trigger Spring Data into setting the audit metadata on your entities.
+
+```java
+@Configuration
+@EnableJpaAuditing
+public class AuditSecurityConfiguration {
+	@Bean
+	AuditorAware<Author> auditorAware(AuthorRepository repo) {
+		// Lookup Author instance corresponding to logged in user
+		return () -> Optional.ofNullable(SecurityContextHolder.getContext())
+				.map(SecurityContext::getAuthentication)
+				.filter(Authentication::isAuthenticated)
+				.map(Authentication::getName)
+				.flatMap(repo::findByName);
+	}
+}
+```
+
 
 The `AuditSecurityConfiguration` class defines a single `AuditorAware<Author>` bean, needed to lookup the `Author` entity corresponding to the active user.
 Note that the return type matches the auditing type argument set on the `Blogpost` class.
@@ -36,4 +79,4 @@ Our `AuditSecurityConfigurationTest` ties together all elements to ensure audit 
 There are additional tests that verify the current behavior when an `Author` can not be found.
 
 == References
-- https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#auditing[Spring Data JPA Reference]
+- https://docs.spring.io/spring-data/jpa/docs/2.2.x/reference/html/#auditing[Spring Data JPA Reference on Auditing]
