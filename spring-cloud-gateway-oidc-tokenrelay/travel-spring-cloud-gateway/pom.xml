@@ -21,7 +21,7 @@
 		<!-- TokenRelayGatewayFilterFactory -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-security</artifactId>
+			<artifactId>spring-cloud-security</artifactId>
 		</dependency>
 	</dependencies>
 </project>

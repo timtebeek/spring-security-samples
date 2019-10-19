@@ -17,7 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
 @Configuration
 @EnableWebSecurity
@@ -42,11 +41,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
 		jwtDecoder.setClaimSetConverter(new UsernameSubClaimAdapter());
 		return jwtDecoder;
-	}
-
-	@Bean
-	public SpringSecurityDialect springSecurityDialect() {
-		return new SpringSecurityDialect();
 	}
 
 }

@@ -11,13 +11,14 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-		// Disable Gateway CSRF to prevent conflicts with proxied service CSRF
+		// Disable CSRF in the gateway to prevent conflicts with proxied service CSRF
 		http.csrf().disable();
+		// Allow showing /home within a frame
 		http.headers().frameOptions().mode(Mode.SAMEORIGIN);
-		http.authorizeExchange()
-				.anyExchange().authenticated()
-				.and()
-				.oauth2Login();
+		// Require authentication for all requests
+		http.authorizeExchange().anyExchange().authenticated();
+		// Authenticate through configured OpenID Provider
+		http.oauth2Login();
 		return http.build();
 	}
 
