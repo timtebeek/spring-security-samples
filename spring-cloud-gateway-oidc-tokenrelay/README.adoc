@@ -84,18 +84,122 @@ We specifically match path prefixes to our services, which align with the `serve
 === Resource servers
 Our resource servers only differ in name; one for flights, and another for hotels.
 
-
 ==== Dependencies
-1. Authentication with the OpenID Provider is handled through `org.springframework.boot:spring-boot-starter-oauth2-client`
-2. Gateway functionality is offered through `org.springframework.cloud:spring-cloud-starter-gateway`
-3. Relaying the token to the proxied resource servers comes from `org.springframework.cloud:spring-cloud-security`
+1. Token validation as per the configured OpenID Provider is handled through `org.springframework.security:spring-security-oauth2-resource-server`
+2. JSON Web Tokens are decoded using `org.springframework.security:spring-security-oauth2-jose`
+3. Customization of token handling requires `org.springframework.security:spring-security-config`
 
 ==== Code
+Our resource servers need a bit more code to customize various aspects of the token handling.
+
+Firstly, we need to the basics of security; ensuring tokens are decoded and checked properly, and required on each request.
 [source,java]
 ----
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    // Validate tokens through configured OpenID Provider
+    http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+    // Require authentication for all requests
+    http.authorizeRequests().anyRequest().authenticated();
+    // Allow showing pages within a frame
+    http.headers().frameOptions().sameOrigin();
+  }
+
+  ...
+}
+----
+
+Secondly, we choose to extract authorities from the the claims within our Keycloak tokens.
+This step is optional, and will differ based on your configured OpenID Provider and role mappers.
+[source,java]
+----
+private JwtAuthenticationConverter jwtAuthenticationConverter() {
+  JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+  // Convert realm_access.roles claims to granted authorities, for use in access decisions
+  converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
+  return converter;
+}
+
+[...]
+
+class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+  @Override
+  public Collection<GrantedAuthority> convert(Jwt jwt) {
+    final Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
+    return ((List<String>) realmAccess.get("roles")).stream()
+      .map(roleName -> "ROLE_" + roleName)
+      .map(SimpleGrantedAuthority::new)
+      .collect(Collectors.toList());
+  }
+}
+----
+
+Thirdly we again https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html5/#oauth2resourceserver-jwt-claimsetmapping-rename[extract the `preferred_name` as authentication name], to match up with our gateway.
+[source,java]
+----
+@Bean
+public JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
+  String issuerUri = properties.getJwt().getIssuerUri();
+  NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
+  // Use preferred_username from claims as authentication name, instead of UUID subject
+  jwtDecoder.setClaimSetConverter(new UsernameSubClaimAdapter());
+  return jwtDecoder;
+}
+
+[...]
+
+class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
+
+  private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
+
+  @Override
+  public Map<String, Object> convert(Map<String, Object> claims) {
+    Map<String, Object> convertedClaims = this.delegate.convert(claims);
+    String username = (String) convertedClaims.get("preferred_username");
+    convertedClaims.put("sub", username);
+    return convertedClaims;
+  }
+
+}
 ----
 
 ==== Configuration
+In terms of configuration we again have to separate concerns.
+
+Firstly we aim to start the service on a different port and path, to line up with the gateway proxy configuration.
+[source,yaml]
+----
+server:
+  port: 8082
+  servlet:
+    context-path: /hotels/
+----
+
+Secondly, we configure the resource server with the same `issuer-uri` as we did in the gateway, to ensure tokens are decoded and validated properly.
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
+----
+
+== Conclusion
+
+With all this in place we have the basics of a functioning gateway.
+It redirects users to Keycloak for authentication, while hiding the JSON Web Tokens details from the user.
+Any requests to resource servers are enriched with the appropriate user `access_token`, which is verified and converted into an `JwtAuthenticationToken` for use in access decisions.
+
+== Further work
+
+While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and token refresh flows.
+We expect these concerns to become easier to manage as development on Spring Cloud Gateway and Security continues.
 
 == References
 https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway] +
