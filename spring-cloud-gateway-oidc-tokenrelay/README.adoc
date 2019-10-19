@@ -1,0 +1,103 @@
+= Spring Cloud Gateway with OpenID Connect and Token Relay
+
+> Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.
+
+When combined with Spring Security 5.2+ and an OpenID Provider such as Keycloak, one can rapidly setup a secure gateway for OAuth2 resource servers.
+
+Where link:../gateway/README.adoc[our WebFlux-based Gateway post] explores the various choices and considerations when implementing a gateway, this post assumes those choices have been made.
+
+== Implementation
+
+Our sample models a travel website, implemented as a gateway, with two resource servers for flights and hotels.
+We're using https://www.thymeleaf.org[Thymeleaf] as a template engine to keep the technology stack limited to and based on Java.
+Each component renders part of the overall website, for better separation in an exploration of https://martinfowler.com/articles/micro-frontends.html[Micro Frontends].
+
+=== Keycloak
+
+Once again we've chosen to use https://www.keycloak.org[Keycloak] as our identity provider; although any OpenID Provider ought to work.
+Configuration consists of link:keycloak/README.adoc[creating a realm, client and user], and configuring the gateway with the same.
+
+=== Gateway
+
+Our Gateway is rather minimal in terms of dependencies, code and configuration.
+
+==== Dependencies
+1. Authentication with the OpenID Provider is handled through `org.springframework.boot:spring-boot-starter-oauth2-client`
+2. Gateway functionality is offered through `org.springframework.cloud:spring-cloud-starter-gateway`
+3. Relaying the token to the proxied resource servers comes from `org.springframework.cloud:spring-cloud-security`
+
+==== Code
+Aside from the common `@SpringBootApplication` annotation and a few web controller endpoints, all we need is:
+[source,java]
+----
+@Bean
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+  // Authenticate through configured OpenID Provider
+  http.oauth2Login();
+  // Require authentication for all requests
+  http.authorizeExchange().anyExchange().authenticated();
+  // Allow showing /home within a frame
+  http.headers().frameOptions().mode(Mode.SAMEORIGIN);
+  // Disable CSRF in the gateway to prevent conflicts with proxied service CSRF
+  http.csrf().disable();
+  return http.build();
+}
+----
+==== Configuration
+Configuration is split in two parts; one part for the OpenID Provider.
+Notice how we set the `user-name-attribute` to instruct our client to use the specified claim as our user name.
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: spring-cloud-gateway-client
+            client-secret: 016c6e1c-9cbe-4ad3-aee1-01ddbb370f32
+----
+And another part for Spring Cloud Gateway to proxy our service, and relay our tokens.
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      default-filters:
+      - TokenRelay
+      routes:
+      - id: flights-service
+        uri: http://127.0.0.1:8081/flights
+        predicates:
+        - Path=/flights/**
+      - id: hotels-service
+        uri: http://127.0.0.1:8082/hotels
+        predicates:
+        - Path=/hotels/**
+----
+We specifically match path prefixes to our services, which align with the `server.servlet.context`-path` used within those services.
+
+=== Resource servers
+Our resource servers only differ in name; one for flights, and another for hotels.
+
+
+==== Dependencies
+1. Authentication with the OpenID Provider is handled through `org.springframework.boot:spring-boot-starter-oauth2-client`
+2. Gateway functionality is offered through `org.springframework.cloud:spring-cloud-starter-gateway`
+3. Relaying the token to the proxied resource servers comes from `org.springframework.cloud:spring-cloud-security`
+
+==== Code
+[source,java]
+----
+----
+
+==== Configuration
+
+== References
+https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway] +
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/[Spring Security] +
+https://cloud.spring.io/spring-cloud-static/spring-cloud-security/2.2.0.M3/reference/html/[Spring Cloud Security] +
