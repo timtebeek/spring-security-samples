@@ -4,18 +4,19 @@
 
 When combined with Spring Security 5.2+ and an OpenID Provider such as Keycloak, one can rapidly setup a secure gateway for OAuth2 resource servers.
 
-Where link:../gateway/README.adoc[our WebFlux-based Gateway post] explores the various choices and considerations when implementing a gateway, this post assumes those choices have been made.
+Where link:../gateway/README.adoc[our WebFlux-based Gateway post] explores the various choices and considerations when implementing a gateway, this post assumes those choices have already resulted in the above.
+We consider this combination a promising standards-based gateway solution, with desirable characteristics such as hiding tokens from the client, while keeping complexity to a minimum.
 
 == Implementation
 
 Our sample models a travel website, implemented as a gateway, with two resource servers for flights and hotels.
 We're using https://www.thymeleaf.org[Thymeleaf] as a template engine to keep the technology stack limited to and based on Java.
-Each component renders part of the overall website, for better separation in an exploration of https://martinfowler.com/articles/micro-frontends.html[Micro Frontends].
+Each component renders part of the overall website, to model domain separation in an exploration of https://martinfowler.com/articles/micro-frontends.html[Micro Frontends].
 
 === Keycloak
 
 Once again we've chosen to use https://www.keycloak.org[Keycloak] as our identity provider; although any OpenID Provider ought to work.
-Configuration consists of link:keycloak/README.adoc[creating a realm, client and user], and configuring the gateway with the same.
+Configuration consists of link:keycloak/README.adoc[creating a realm, client and user], and configuring the gateway with those details.
 
 === Gateway
 
@@ -79,10 +80,12 @@ spring:
         predicates:
         - Path=/hotels/**
 ----
-We specifically match path prefixes to our services, which align with the `server.servlet.context`-path` used within those services.
+`TokenRelay` activates the `TokenRelayGatewayFilterFactory`, which appends the user `Bearer` to downstream proxied requests.
+We specifically match path prefixes to our services, which align with the `server.servlet.context-path` used within those services.
 
 === Resource servers
 Our resource servers only differ in name; one for flights, and another for hotels.
+Each contains a minimal web application showing the user name, to highlight that it's passed along to the server.
 
 ==== Dependencies
 1. Token validation as per the configured OpenID Provider is handled through `org.springframework.security:spring-security-oauth2-resource-server`
@@ -168,7 +171,7 @@ class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<Stri
 ----
 
 ==== Configuration
-In terms of configuration we again have to separate concerns.
+In terms of configuration we again have two separate concerns.
 
 Firstly we aim to start the service on a different port and path, to line up with the gateway proxy configuration.
 [source,yaml]
