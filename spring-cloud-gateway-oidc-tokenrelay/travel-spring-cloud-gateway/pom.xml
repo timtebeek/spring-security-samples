@@ -8,15 +8,15 @@
 	</parent>
 	<artifactId>travel-spring-cloud-gateway</artifactId>
 	<dependencies>
-		<!-- Gateway itself -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-gateway</artifactId>
-		</dependency>
 		<!-- Authenticate with Keycloak -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<!-- Gateway itself -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
 		<!-- TokenRelayGatewayFilterFactory -->
 		<dependency>
