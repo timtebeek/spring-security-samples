@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -26,6 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
+@Disabled("requires keycloak to start")
 class TravelGatewayApplicationTest {
 	@Autowired
 	private WebTestClient wtc;
