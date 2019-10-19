@@ -24,13 +24,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.headers().frameOptions().sameOrigin();
-		http.authorizeRequests().anyRequest().authenticated();
+		// Validate tokens through configured OpenID Provider
 		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+		// Require authentication for all requests
+		http.authorizeRequests().anyRequest().authenticated();
+		// Allow showing pages within a frame
+		http.headers().frameOptions().sameOrigin();
 	}
 
 	private JwtAuthenticationConverter jwtAuthenticationConverter() {
-		final JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		// Convert realm_access.roles claims to granted authorities, for use in access decisions
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
 		return jwtAuthenticationConverter;
 	}
@@ -39,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
 		String issuerUri = properties.getJwt().getIssuerUri();
 		NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
+		// Use preferred_username from claims as authentication name, instead of UUID subject
 		jwtDecoder.setClaimSetConverter(new UsernameSubClaimAdapter());
 		return jwtDecoder;
 	}
