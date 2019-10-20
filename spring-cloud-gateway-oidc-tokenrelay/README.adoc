@@ -201,7 +201,7 @@ Any requests to resource servers are enriched with the appropriate user `access_
 
 == Further work
 
-While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and token refresh flows.
+While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and https://github.com/spring-cloud/spring-cloud-security/issues/175[token refresh flows].
 We expect these concerns to become easier to manage as development on Spring Cloud Gateway and Security continues.
 
 == References
