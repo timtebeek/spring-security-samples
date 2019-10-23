@@ -46,7 +46,9 @@ public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
 ----
 ==== Configuration
 Configuration is split in two parts; one part for the OpenID Provider.
-Notice how we set the `user-name-attribute` to instruct our client to use the specified claim as our user name.
+The `issuer-uri` property refers to the https://tools.ietf.org/html/rfc8414#section-3[RFC 8414 Authorization Server Metadata] endpoint exposed bij Keycloak.
+If you append `.well-known/openid-configuration` to the URL you'll see the details used to configure authentication through OpenID.
+Notice how we also set the `user-name-attribute` to instruct our client to use the specified claim as our user name.
 [source,yaml]
 ----
 spring:
@@ -62,7 +64,7 @@ spring:
             client-id: spring-cloud-gateway-client
             client-secret: 016c6e1c-9cbe-4ad3-aee1-01ddbb370f32
 ----
-And another part for Spring Cloud Gateway to proxy our service, and relay our tokens.
+The second part of our Gateway configuration consists of the routes and services to proxy, and instructions to relay our tokens.
 [source,yaml]
 ----
 spring:
