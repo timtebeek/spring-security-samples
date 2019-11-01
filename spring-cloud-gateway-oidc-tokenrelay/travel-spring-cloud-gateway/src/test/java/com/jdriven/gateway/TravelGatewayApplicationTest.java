@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
-@Disabled("requires keycloak to start")
+@AutoConfigureWireMock(port = 8090)
 class TravelGatewayApplicationTest {
 	@Autowired
 	private WebTestClient wtc;
