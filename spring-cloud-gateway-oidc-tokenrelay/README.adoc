@@ -90,6 +90,8 @@ Our resource servers only differ in name; one for flights, and another for hotel
 Each contains a minimal web application showing the user name, to highlight that it's passed along to the server.
 
 ==== Dependencies
+We add `org.springframework.boot:spring-boot-starter-oauth2-resource-server` to our resource server projects, which transitively supplies three dependencies.
+
 1. Token validation as per the configured OpenID Provider is handled through `org.springframework.security:spring-security-oauth2-resource-server`
 2. JSON Web Tokens are decoded using `org.springframework.security:spring-security-oauth2-jose`
 3. Customization of token handling requires `org.springframework.security:spring-security-config`
@@ -205,6 +207,23 @@ Any requests to resource servers are enriched with the appropriate user `access_
 
 While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and https://github.com/spring-cloud/spring-cloud-security/issues/175[token refresh flows].
 We expect these concerns to become easier to manage as development on Spring Cloud Gateway and Security continues.
+
+== Upgrading from `spring-security-oauth`
+
+If you've previously used `spring-security-oauth` you might now be wondering:
+
+> What ever happened to `@EnableResourceServer`, `@EnableOAuth2Client`, `@EnableOAuth2Sso` and `ResourceServerConfigurer`?
+
+The https://spring.io/blog/2018/01/30/next-generation-oauth-2-0-support-with-spring-security[Spring Security OAuth] project containing these classes has been put into maintenance mode, with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
+Going forward we suggest you:
+
+- remove any dependency on:
+ * `org.springframework.security.oauth:spring-security-oauth`
+ * `org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure`
+- replace these with `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, as outlined above.
+
+
+
 
 == References
 https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway] +
