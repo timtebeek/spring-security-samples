@@ -197,6 +197,13 @@ spring:
           issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
 ----
 
+==== Testing
+The Hotels and Flights service each take a slightly different approach to how the tests are implemented.
+The Flights service swaps out the `JwtDecoder` bean for a mock, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[as indicated in the documentation].
+The Hotels service instead uses WireMock to play back a recorded Keycloak response, allowing the `JwtDecoder` to bootstrap normally.
+Both use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
+Which style fits your service best depends on how thorough and which aspects of JWT handling you want to test specifically.
+
 == Conclusion
 
 With all this in place we have the basics of a functioning gateway.
