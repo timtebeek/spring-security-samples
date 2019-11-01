@@ -1,0 +1,4 @@
+Our tests need to connect to a OpenID Connect provider to bootstrap the application context.
+For that we've started keycloak normally, and then setup WireMock to record calls to Keycloak:
+`java -jar wiremock-standalone-2.25.1.jar --record-mappings --proxy-all="http://localhost:8090"`
+The resulting `mappings` and `__files` can be found in this folder.
