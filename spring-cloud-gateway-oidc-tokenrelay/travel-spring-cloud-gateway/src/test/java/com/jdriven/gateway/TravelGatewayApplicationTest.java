@@ -18,30 +18,30 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClientConfigurer;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockAuthentication;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 8090)
 class TravelGatewayApplicationTest {
 	@Autowired
-	private WebTestClient wtc;
+	private WebTestClient client;
 
 	@Test
 	void testGetIndexAnonymously() throws Exception {
-		wtc.get().uri("/").exchange()
+		client.get().uri("/").exchange()
 				.expectStatus().is3xxRedirection()
 				.expectHeader().value(HttpHeaders.LOCATION, is("/oauth2/authorization/keycloak"));
 	}
 
 	@Test
 	void testGetHomeAuthenticated() throws Exception {
-		wtc.mutateWith(oauth2Authentication())
+		client.mutateWith(oauth2Authentication())
 				.get().uri("/home").exchange()
 				.expectStatus().is2xxSuccessful()
 				.expectBody(String.class).value(containsString("href=\"/whoami\"><span>Subject A</span></a>."));
@@ -53,7 +53,7 @@ class TravelGatewayApplicationTest {
 		Collection<? extends GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("user"));
 		OAuth2User principal = new DefaultOidcUser(auths, token);
 		Authentication auth = new OAuth2AuthenticationToken(principal, auths, "some-client");
-		return SecurityMockServerConfigurers.mockAuthentication(auth);
+		return mockAuthentication(auth);
 	}
 
 }
