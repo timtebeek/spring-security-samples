@@ -1,6 +1,7 @@
 package com.jdriven.service;
 
 import com.jdriven.model.Spreadsheet;
+import com.jdriven.permission.SpreadsheetPrintAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,11 @@ public class SpreadsheetService {
 	@PreAuthorize("hasPermission(#id, 'com.jdriven.model.Spreadsheet', 'WRITE')")
 	public void writeById(Long id) {
 		log.info("Writing Spreadsheet id {} ", id);
+	}
+
+	@SpreadsheetPrintAccess
+	public void print(Spreadsheet spreadsheet) {
+		log.info("Printing {}", spreadsheet);
 	}
 
 }

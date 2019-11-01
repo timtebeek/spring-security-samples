@@ -27,6 +27,10 @@ public void readById(Long id) {
 
 The https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#el-common-built-in[`hasPermission` methods return `true` if the user has access to the provided target for the given permission].
 
+==== Meta annotations
+To help keep your code readable, and prevent duplication you can https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#method-security-meta-annotations[create your own meta-annotations].
+These allow you to write your security expression once, and use your own annotations throughout your code base.
+
 === PermissionEvaluator
 The default `SecurityExpressionHandler` delegates `hasPermission` invocations to a unique  `PermissionEvaluator` bean, if configured.
 If no `PermissionEvaluator` bean is provided, it will fallback to the `DenyAllPermissionEvaluator` to prevent method invocations.

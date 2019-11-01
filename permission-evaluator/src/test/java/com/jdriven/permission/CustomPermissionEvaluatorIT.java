@@ -31,6 +31,7 @@ class CustomPermissionEvaluatorIT {
 		spreadsheet = new Spreadsheet(123L, "alice's spreadsheet");
 		store.getPermissions().add(new SpreadsheetPermission(alice, spreadsheet, "READ"));
 		store.getPermissions().add(new SpreadsheetPermission(alice, spreadsheet, "WRITE"));
+		store.getPermissions().add(new SpreadsheetPermission(alice, spreadsheet, "PRINT"));
 		store.getPermissions().add(new SpreadsheetPermission(bob, spreadsheet, "READ"));
 	}
 
@@ -56,6 +57,12 @@ class CustomPermissionEvaluatorIT {
 	@WithMockUser("alice")
 	void testAliceAllowedToWriteSpreadsheetById() {
 		service.writeById(spreadsheet.getId());
+	}
+
+	@Test
+	@WithMockUser("alice")
+	void testAliceAllowedToPrintSpreadsheet() {
+		service.print(spreadsheet);
 	}
 
 	@Test
@@ -87,6 +94,12 @@ class CustomPermissionEvaluatorIT {
 	@WithMockUser("bob")
 	void testBobNotAllowedToWriteSpreadsheet() {
 		Assertions.assertThrows(AccessDeniedException.class, () -> service.write(spreadsheet));
+	}
+
+	@Test
+	@WithMockUser("bob")
+	void testBobNotAllowedToPrintSpreadsheet() {
+		Assertions.assertThrows(AccessDeniedException.class, () -> service.print(spreadsheet));
 	}
 
 	@Test
