@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HotelsApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(HotelsApplication.class, args);
 	}
 

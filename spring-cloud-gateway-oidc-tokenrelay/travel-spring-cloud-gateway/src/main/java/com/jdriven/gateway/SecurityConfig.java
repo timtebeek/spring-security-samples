@@ -13,7 +13,7 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-			ReactiveClientRegistrationRepository clientRegistrationRepository) throws Exception {
+			ReactiveClientRegistrationRepository clientRegistrationRepository) {
 		// Authenticate through configured OpenID Provider
 		http.oauth2Login();
 		// Also logout at the OpenID Connect provider

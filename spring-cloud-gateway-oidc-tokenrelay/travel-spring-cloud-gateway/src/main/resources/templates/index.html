@@ -45,7 +45,7 @@ body, html {
 			<span class="navbar-text"><a class="nav-link" th:href="@{/logout}">Logout <span sec:authentication="name">name</span></a></span>
 		</div>
 	</nav>
-	<div class="container frame-container">
+	<div class="frame-container">
 		<!-- As per: https://martinfowler.com/articles/micro-frontends.html -->
 		<iframe class="iframe" name="micro-frontend-container" th:src="@{/home}"></iframe>
 	</div>
