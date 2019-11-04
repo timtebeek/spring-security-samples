@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Spring Cloud Gateway</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body class="container">
+	<div class="row">
+		<div class="col">
+			<h1>Home</h1>
+			<p>
+				View <a href="#" th:href="@{/flights/}">Flights</a> or <a href="#" th:href="@{/hotels/}">Hotels</a> for <a
+					th:href="@{/whoami}"><span sec:authentication="name">user</span></a>.
+			</p>
+		</div>
+	</div>
+</body>
+</html>

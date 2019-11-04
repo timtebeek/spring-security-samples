@@ -1,0 +1,245 @@
+= Spring Cloud Gateway with OpenID Connect and Token Relay
+
+> Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.
+
+When combined with Spring Security 5.2+ and an OpenID Provider such as Keycloak, one can rapidly setup a secure gateway for OAuth2 resource servers.
+
+Where link:../gateway/README.adoc[our WebFlux-based Gateway post] explores the various choices and considerations when implementing a gateway, this post assumes those choices have already resulted in the above.
+We consider this combination a promising standards-based gateway solution, with desirable characteristics such as hiding tokens from the client, while keeping complexity to a minimum.
+
+== Implementation
+
+Our sample models a travel website, implemented as a gateway, with two resource servers for flights and hotels.
+We're using https://www.thymeleaf.org[Thymeleaf] as a template engine to keep the technology stack limited to and based on Java.
+Each component renders part of the overall website, to model domain separation in an exploration of https://martinfowler.com/articles/micro-frontends.html[Micro Frontends].
+
+=== Keycloak
+
+Once again we've chosen to use https://www.keycloak.org[Keycloak] as our identity provider; although any OpenID Provider ought to work.
+Configuration consists of link:keycloak/README.adoc[creating a realm, client and user], and configuring the gateway with those details.
+
+=== Gateway
+
+Our Gateway is rather minimal in terms of dependencies, code and configuration.
+
+==== Dependencies
+1. Authentication with the OpenID Provider is handled through `org.springframework.boot:spring-boot-starter-oauth2-client`
+2. Gateway functionality is offered through `org.springframework.cloud:spring-cloud-starter-gateway`
+3. Relaying the token to the proxied resource servers comes from `org.springframework.cloud:spring-cloud-security`
+
+==== Code
+Aside from the common `@SpringBootApplication` annotation and a few web controller endpoints, all we need is:
+[source,java]
+----
+@Bean
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+    ReactiveClientRegistrationRepository clientRegistrationRepository) {
+  // Authenticate through configured OpenID Provider
+  http.oauth2Login();
+  // Also logout at the OpenID Connect provider
+  http.logout(logout -> logout.logoutSuccessHandler(new OidcClientInitiatedServerLogoutSuccessHandler(clientRegistrationRepository)));
+  // Require authentication for all requests
+  http.authorizeExchange().anyExchange().authenticated();
+  // Allow showing /home within a frame
+  http.headers().frameOptions().mode(Mode.SAMEORIGIN);
+  // Disable CSRF in the gateway to prevent conflicts with proxied service CSRF
+  http.csrf().disable();
+  return http.build();
+}
+----
+==== Configuration
+Configuration is split in two parts; one part for the OpenID Provider.
+The `issuer-uri` property refers to the https://tools.ietf.org/html/rfc8414#section-3[RFC 8414 Authorization Server Metadata] endpoint exposed bij Keycloak.
+If you append `.well-known/openid-configuration` to the URL you'll see the details used to configure authentication through OpenID.
+Notice how we also set the `user-name-attribute` to instruct our client to use the specified claim as our user name.
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: spring-cloud-gateway-client
+            client-secret: 016c6e1c-9cbe-4ad3-aee1-01ddbb370f32
+----
+The second part of our Gateway configuration consists of the routes and services to proxy, and instructions to relay our tokens.
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      default-filters:
+      - TokenRelay
+      routes:
+      - id: flights-service
+        uri: http://127.0.0.1:8081/flights
+        predicates:
+        - Path=/flights/**
+      - id: hotels-service
+        uri: http://127.0.0.1:8082/hotels
+        predicates:
+        - Path=/hotels/**
+----
+`TokenRelay` activates the `TokenRelayGatewayFilterFactory`, which appends the user `Bearer` to downstream proxied requests.
+We specifically match path prefixes to our services, which align with the `server.servlet.context-path` used within those services.
+
+==== Testing
+The OpenID connect client configuration requires the configured provider URL to be available when the application starts.
+To get around this in our tests we've link:/travel-spring-cloud-gateway/src/test/resources/README.adoc[recorded the Keycloak response with WireMock], and replay that when our tests run.
+Once the test application context is started, we want to make an authenticated request to our gateway.
+For this, we use the new https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-webtestclientconfigurer-literal[`SecurityMockServerConfigurers#authentication(Authentication)`] Mutator introduced in Spring Security 5.0.
+Using this we can set any properties we might need; to mimic what our gateway normally handles for us.
+
+=== Resource servers
+Our resource servers only differ in name; one for flights, and another for hotels.
+Each contains a minimal web application showing the user name, to highlight that it's passed along to the server.
+
+==== Dependencies
+We add `org.springframework.boot:spring-boot-starter-oauth2-resource-server` to our resource server projects, which transitively supplies three dependencies.
+
+1. Token validation as per the configured OpenID Provider is handled through `org.springframework.security:spring-security-oauth2-resource-server`
+2. JSON Web Tokens are decoded using `org.springframework.security:spring-security-oauth2-jose`
+3. Customization of token handling requires `org.springframework.security:spring-security-config`
+
+==== Code
+Our resource servers need a bit more code to customize various aspects of the token handling.
+
+Firstly, we need to the basics of security; ensuring tokens are decoded and checked properly, and required on each request.
+[source,java]
+----
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    // Validate tokens through configured OpenID Provider
+    http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+    // Require authentication for all requests
+    http.authorizeRequests().anyRequest().authenticated();
+    // Allow showing pages within a frame
+    http.headers().frameOptions().sameOrigin();
+  }
+
+  ...
+}
+----
+
+Secondly, we choose to extract authorities from the the claims within our Keycloak tokens.
+This step is optional, and will differ based on your configured OpenID Provider and role mappers.
+[source,java]
+----
+private JwtAuthenticationConverter jwtAuthenticationConverter() {
+  JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+  // Convert realm_access.roles claims to granted authorities, for use in access decisions
+  converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
+  return converter;
+}
+
+[...]
+
+class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+  @Override
+  public Collection<GrantedAuthority> convert(Jwt jwt) {
+    final Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
+    return ((List<String>) realmAccess.get("roles")).stream()
+      .map(roleName -> "ROLE_" + roleName)
+      .map(SimpleGrantedAuthority::new)
+      .collect(Collectors.toList());
+  }
+}
+----
+
+Thirdly we again https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html5/#oauth2resourceserver-jwt-claimsetmapping-rename[extract the `preferred_name` as authentication name], to match up with our gateway.
+[source,java]
+----
+@Bean
+public JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
+  String issuerUri = properties.getJwt().getIssuerUri();
+  NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
+  // Use preferred_username from claims as authentication name, instead of UUID subject
+  jwtDecoder.setClaimSetConverter(new UsernameSubClaimAdapter());
+  return jwtDecoder;
+}
+
+[...]
+
+class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
+
+  private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
+
+  @Override
+  public Map<String, Object> convert(Map<String, Object> claims) {
+    Map<String, Object> convertedClaims = this.delegate.convert(claims);
+    String username = (String) convertedClaims.get("preferred_username");
+    convertedClaims.put("sub", username);
+    return convertedClaims;
+  }
+
+}
+----
+
+==== Configuration
+In terms of configuration we again have two separate concerns.
+
+Firstly we aim to start the service on a different port and context-path, to line up with the gateway proxy configuration.
+[source,yaml]
+----
+server:
+  port: 8082
+  servlet:
+    context-path: /hotels/
+----
+
+Secondly, we configure the resource server with the same `issuer-uri` as we did in the gateway, to ensure tokens are decoded and validated properly.
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
+----
+
+==== Testing
+The Hotels and Flights service each take a slightly different approach to how the tests are implemented.
+The Flights service https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[swaps out the `JwtDecoder` bean for a mock].
+The Hotels service instead uses WireMock to play back a recorded Keycloak response, allowing the `JwtDecoder` to bootstrap normally.
+Both use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
+Which style fits you best depends on how thorough and which aspects of JWT handling you want to test specifically.
+
+== Conclusion
+With all this in place we have the basics of a functioning gateway.
+It redirects users to Keycloak for authentication, while hiding the JSON Web Token from the user.
+Any proxied requests to resource servers are enriched with the appropriate user `access_token`, which is verified and converted into an `JwtAuthenticationToken` for use in access decisions.
+
+== Further work
+While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and https://github.com/spring-cloud/spring-cloud-security/issues/175[token refresh flows].
+We expect these concerns to become easier to manage as development on Spring Cloud Gateway and Security continues.
+
+== Upgrading from `spring-security-oauth`
+If you've previously used `spring-security-oauth` you might now be wondering:
+
+> What ever happened to `@EnableResourceServer`, `@EnableOAuth2Client`, `@EnableOAuth2Sso` and `ResourceServerConfigurer`?
+
+The https://spring.io/blog/2018/01/30/next-generation-oauth-2-0-support-with-spring-security[Spring Security OAuth] project containing these classes has been put into maintenance mode, with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
+Going forward we suggest you:
+
+- remove any dependency on:
+ * `org.springframework.security.oauth:spring-security-oauth`
+ * `org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure`
+- replace these with `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, as outlined above.
+
+
+
+
+== References
+https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway] +
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/[Spring Security] +
+https://cloud.spring.io/spring-cloud-static/spring-cloud-security/2.2.0.M3/reference/html/[Spring Cloud Security] +

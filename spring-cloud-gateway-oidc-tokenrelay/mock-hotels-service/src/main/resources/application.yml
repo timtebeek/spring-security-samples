@@ -1,0 +1,12 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /hotels/
+spring:
+  application:
+    name: hotels-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
