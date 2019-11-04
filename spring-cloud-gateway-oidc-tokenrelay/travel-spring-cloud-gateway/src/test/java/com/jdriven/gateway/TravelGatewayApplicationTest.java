@@ -40,6 +40,14 @@ class TravelGatewayApplicationTest {
 	}
 
 	@Test
+	void testGetIndexAuthenticated() throws Exception {
+		client.mutateWith(oauth2Authentication())
+				.get().uri("/").exchange()
+				.expectStatus().is2xxSuccessful()
+				.expectBody(String.class).value(containsString("Logout <span>Subject A</span>"));
+	}
+
+	@Test
 	void testGetHomeAuthenticated() throws Exception {
 		client.mutateWith(oauth2Authentication())
 				.get().uri("/home").exchange()
@@ -52,7 +60,7 @@ class TravelGatewayApplicationTest {
 		OidcIdToken token = new OidcIdToken("jwt", Instant.now(), Instant.MAX, claims);
 		Collection<? extends GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("user"));
 		OAuth2User principal = new DefaultOidcUser(auths, token);
-		Authentication auth = new OAuth2AuthenticationToken(principal, auths, "some-client");
+		Authentication auth = new OAuth2AuthenticationToken(principal, auths, "keycloak");
 		return mockAuthentication(auth);
 	}
 
