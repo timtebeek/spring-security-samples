@@ -32,9 +32,12 @@ Aside from the common `@SpringBootApplication` annotation and a few web controll
 [source,java]
 ----
 @Bean
-public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+    ReactiveClientRegistrationRepository clientRegistrationRepository) {
   // Authenticate through configured OpenID Provider
   http.oauth2Login();
+  // Also logout at the OpenID Connect provider
+  http.logout(logout -> logout.logoutSuccessHandler(new OidcClientInitiatedServerLogoutSuccessHandler(clientRegistrationRepository)));
   // Require authentication for all requests
   http.authorizeExchange().anyExchange().authenticated();
   // Allow showing /home within a frame
@@ -87,7 +90,7 @@ We specifically match path prefixes to our services, which align with the `serve
 
 ==== Testing
 The OpenID connect client configuration requires the configured provider URL to be available when the application starts.
-To get around this in our tests we've recorded the Keycloak response with WireMock, and replay that when our tests run.
+To get around this in our tests we've link:/travel-spring-cloud-gateway/src/test/resources/README.adoc[recorded the Keycloak response with WireMock], and replay that when our tests run.
 Once the test application context is started, we want to make an authenticated request to our gateway.
 For this, we use the new https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-webtestclientconfigurer-literal[`SecurityMockServerConfigurers#authentication(Authentication)`] Mutator introduced in Spring Security 5.0.
 Using this we can set any properties we might need; to mimic what our gateway normally handles for us.
@@ -184,7 +187,7 @@ class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<Stri
 ==== Configuration
 In terms of configuration we again have two separate concerns.
 
-Firstly we aim to start the service on a different port and path, to line up with the gateway proxy configuration.
+Firstly we aim to start the service on a different port and context-path, to line up with the gateway proxy configuration.
 [source,yaml]
 ----
 server:
@@ -206,24 +209,21 @@ spring:
 
 ==== Testing
 The Hotels and Flights service each take a slightly different approach to how the tests are implemented.
-The Flights service swaps out the `JwtDecoder` bean for a mock, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[as indicated in the documentation].
+The Flights service https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[swaps out the `JwtDecoder` bean for a mock].
 The Hotels service instead uses WireMock to play back a recorded Keycloak response, allowing the `JwtDecoder` to bootstrap normally.
 Both use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
-Which style fits your service best depends on how thorough and which aspects of JWT handling you want to test specifically.
+Which style fits you best depends on how thorough and which aspects of JWT handling you want to test specifically.
 
 == Conclusion
-
 With all this in place we have the basics of a functioning gateway.
-It redirects users to Keycloak for authentication, while hiding the JSON Web Tokens details from the user.
-Any requests to resource servers are enriched with the appropriate user `access_token`, which is verified and converted into an `JwtAuthenticationToken` for use in access decisions.
+It redirects users to Keycloak for authentication, while hiding the JSON Web Token from the user.
+Any proxied requests to resource servers are enriched with the appropriate user `access_token`, which is verified and converted into an `JwtAuthenticationToken` for use in access decisions.
 
 == Further work
-
 While this post outlines the basics for a functioning gateway, further work might be needed in terms of session duration, persistence and https://github.com/spring-cloud/spring-cloud-security/issues/175[token refresh flows].
 We expect these concerns to become easier to manage as development on Spring Cloud Gateway and Security continues.
 
 == Upgrading from `spring-security-oauth`
-
 If you've previously used `spring-security-oauth` you might now be wondering:
 
 > What ever happened to `@EnableResourceServer`, `@EnableOAuth2Client`, `@EnableOAuth2Sso` and `ResourceServerConfigurer`?
