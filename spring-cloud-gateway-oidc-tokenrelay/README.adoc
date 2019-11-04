@@ -90,7 +90,7 @@ We specifically match path prefixes to our services, which align with the `serve
 
 ==== Testing
 The OpenID connect client configuration requires the configured provider URL to be available when the application starts.
-To get around this in our tests we've link:/travel-spring-cloud-gateway/src/test/resources/README.adoc[recorded the Keycloak response with WireMock], and replay that when our tests run.
+To get around this in our tests we've link:/spring-cloud-gateway-oidc-tokenrelay/travel-spring-cloud-gateway/src/test/resources/README.adoc[recorded the Keycloak response with WireMock], and replay that when our tests run.
 Once the test application context is started, we want to make an authenticated request to our gateway.
 For this, we use the new https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-webtestclientconfigurer-literal[`SecurityMockServerConfigurers#authentication(Authentication)`] Mutator introduced in Spring Security 5.0.
 Using this we can set any properties we might need; to mimic what our gateway normally handles for us.
