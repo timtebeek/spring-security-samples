@@ -1,0 +1,18 @@
+{
+  "id" : "e25c86e9-42cb-4f36-957f-39cd783a45cc",
+  "request" : {
+    "url" : "/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/certs",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-auth-realms-spring-cloud-gateway-realm-protocol-openid-connect-certs.json",
+    "headers" : {
+      "Connection" : "keep-alive",
+      "Cache-Control" : "no-cache, must-revalidate, no-transform, no-store",
+      "Content-Type" : "application/json",
+      "Date" : "Fri, 01 Nov 2019 14:35:29 GMT"
+    }
+  },
+  "uuid" : "e25c86e9-42cb-4f36-957f-39cd783a45cc"
+}

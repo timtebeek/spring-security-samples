@@ -44,7 +44,7 @@ image:docs/signin.png[alt='Please sign in']
 If we try to open the same endpoint from the commandline we immediately get a `HTTP/1.1 401` response.
 
 We turn to the application logs to find out what happened in our application.
-As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[UserDetailsServiceAutoConfiguration]:
+As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
 ----
 2019-11-09 17:00:46.665  INFO 709 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
 
@@ -66,6 +66,25 @@ spring:
 ----
 Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
 During development we will either use Keycloak or WireMock to serve the configured `issuer-uri` endpoint.
+
+Once this configuration is in place we can restart our application.
+Looking at the logs we no longer see the generated password; Great!
+The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
+
+However, now we consistently get a `401 Unauthorized` response, since our requests lack a `Bearer` JSON Web Token.
+To solve this, we have to actually pass a Bearer token along with our requests.
+Here's a token and command to get your request through with a `HTTP/1.1 200`:
+
+.Click to show full JSON Web Token
+[%collapsible]
+====
+eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpuZlRUZW1hSkxoZ183Z0dULTZiSFlVIn0.eyJqdGkiOiI4MTAzNTI4MC04YTdjLTRjOTktYWMzMi05MDJkMTY0YWVjZWEiLCJleHAiOjE2NTk3MjcxMzgsIm5iZiI6MCwiaWF0IjoxNTczMzI3MTM4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwOTAvYXV0aC9yZWFsbXMvc3ByaW5nLWNsb3VkLWdhdGV3YXktcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOWJhNDA5YmYtM2ZhOC00MjdjLWI4YmMtOGFlNjYwNmUyOTAyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktY2xpZW50Iiwibm9uY2UiOiJnTVdjMTR1WHZMQk9QVlNTRG96NWFUMWNQSUNoVmZzMXFNVHhSWGJPWDBJIiwiYXV0aF90aW1lIjoxNTczMzI3MTM4LCJzZXNzaW9uX3N0YXRlIjoiYWExMmJlZDgtYTlkNC00YTBlLTgyYjAtNTIxMDUwZTAwODA1IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcGhvbmUgbWljcm9wcm9maWxlLWp3dCBvZmZsaW5lX2FjY2VzcyBwcm9maWxlIGVtYWlsIGFkZHJlc3MiLCJ1cG4iOiJzcHJpbmctY2xvdWQtZ2F0ZXdheS11c2VyIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhZGRyZXNzIjp7fSwiZ3JvdXBzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktdXNlciJ9.HoQ86lJhILWhvZUfefJdxHdTqb4jZFkdWTKHzOAxhNApc9YIgv1zLLlMAXFJHgL1ITY9R1Ke2-SUqMG8d1djPA6D6YRJn4MpWyiS66qpBuRNHg47c9dc-cBLUkXLy9nBZFget87_ZHNhXG_v3MILhH0VbKIWafOTdoJLhJOSy6aQ44iAMjCKXZgMv7EcfvXmwAquaJGGB_fgUa2FXztnt_Fwq4nLgbkU-UYXIqycJVb1gaBbfHmbPpq4pZrkc2Q_9d5FSLGeHIkGmeq17kJLKDzXmvDFu3J5X43nSIaH_WhqSeKkeYAb5HK_xXJnQhRSzku9kYm3dd7z9GBJuSMpRQ
+====
+[source,bash]
+----
+$ export token=eyJhbGc...
+$ http :8080/view/all "Authorization: Bearer ${token}" 
+----
 
 == Configuring web security
 
