@@ -1,0 +1,18 @@
+{
+  "id" : "99bef433-e47e-31a8-87f8-54e010afe8b3",
+  "request" : {
+    "url" : "/auth/realms/spring-cloud-gateway-realm/.well-known/openid-configuration",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-auth-realms-spring-cloud-gateway-realm-.well-known-openid-configuration-y7TY7.json",
+    "headers" : {
+      "Connection" : "keep-alive",
+      "Cache-Control" : "no-cache, must-revalidate, no-transform, no-store",
+      "Content-Type" : "application/json",
+      "Date" : "Fri, 01 Nov 2019 14:35:29 GMT"
+    }
+  },
+  "uuid" : "99bef433-e47e-31a8-87f8-54e010afe8b3"
+}

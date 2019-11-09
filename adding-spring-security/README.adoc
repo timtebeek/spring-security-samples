@@ -33,9 +33,39 @@ If your service will act as an OAuth2 client to acquire JSON Web Tokens, you'll 
 
 Both starters will provide you with any transitive dependencies you might need for the most common security aspects.
 
-== What happens when you add dependency?
+== What happens when you add the dependency?
+We add a dependency on `spring-boot-starter-oauth2-resource-server` to our initial application.
+Then we start our application by running `LeaveRequestApplication`, and point our browser towards `http://localhost:8080/view/all`.
+Now before adding the dependency this endpoint would show all the leave requests for all employees.
+After adding the dependency, this endpoint now throws up a sign in dialog, which we certainly never configured!
 
+image:docs/signin.png[alt='Please sign in']
 
+If we try to open the same endpoint from the commandline we immediately get a `HTTP/1.1 401` response.
+
+We turn to the application logs to find out what happened in our application.
+As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[UserDetailsServiceAutoConfiguration]:
+----
+2019-11-09 17:00:46.665  INFO 709 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: fcf786f4-797b-499b-9abc-2cee4037edb3
+----
+This auto configration triggers when no other security configuration has been provided.
+
+=== OAuth2 Resource server configuration
+Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#oauth2resourceserver[As indicated in the documentation], configuration takes the form of:
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
+----
+Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
+During development we will either use Keycloak or WireMock to serve the configured `issuer-uri` endpoint.
 
 == Configuring web security
 
@@ -54,10 +84,6 @@ Both starters will provide you with any transitive dependencies you might need f
 === Non-web tests
 
 
-
-[source,yaml]
-----
-----
 
 == Conclusion
 
