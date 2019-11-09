@@ -1,6 +1,14 @@
-= Resource server testing
+= Adding Spring Security
 
+Adding Spring Security to an existing application can be quite a daunting prospect.
+Merely adding the required dependencies to your project sets off a chain of events which can break your application and tests.
 
+Maybe you're suddenly shown a login prompt which expects a generated password logged on startup. +
+Maybe your tests now get the dreaded `401 Unauthorized`, or a `403 Forbidden`. +
+Maybe you get a `ClassCastException` when trying to use your `Authentication#getPrincipal()`. +
+
+Either way, this post is here to help to walk you through adding Spring Security to an existing application,
+by explaining what happens when you first add the dependencies, what to do next, and how to fix your tests.
 
 == Implementation
 
