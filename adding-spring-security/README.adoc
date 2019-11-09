@@ -4,21 +4,60 @@ Adding Spring Security to an existing application can be quite a daunting prospe
 Merely adding the required dependencies to your project sets off a chain of events which can break your application and tests.
 
 Maybe you're suddenly shown a login prompt which expects a generated password logged on startup. +
-Maybe your tests now get the dreaded `401 Unauthorized`, or a `403 Forbidden`. +
+Maybe your tests now get the dreaded `401 Unauthorized`, or a subsequently a `403 Forbidden`. +
 Maybe you get a `ClassCastException` when trying to use your `Authentication#getPrincipal()`. +
+Either way, this post is here to help!
 
-Either way, this post is here to help to walk you through adding Spring Security to an existing application,
+We will walk you through adding Spring Security to an existing application,
 by explaining what happens when you first add the dependencies, what to do next, and how to fix your tests.
 
-== Implementation
+== Our initial application
+To showcase adding Spring Security we've developed a small application, along with some tests of it's functionalities.
+Imagine a Human Resources department that has a small application to track leave requests.
+Initially this application was only used from within the HR department, who received requests via phone or email.
+
+== Which dependency to add?
+Even figuring out which dependency to add can be difficult these days!
+Looking at https://start.spring.io/#!type=maven-project&&jvmVersion=11&dependencies=security,oauth2-client,cloud-security,cloud-oauth2,oauth2-resource-server[start.spring.io]
+we can see there are already 5 different dependencies related to Spring Security and/or OAuth2.
+In part this is down to a https://spring.io/blog/2018/01/30/next-generation-oauth-2-0-support-with-spring-security[restructuring of OAuth2 support],
+with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
+
+In short we now advise against using the Spring Cloud Starter dependencies, and push towards using Spring Security support for OAuth2.
+
+If your service will act as an OAuth2 resource server, by accepting JSON Web Tokens passed in from a gateway, you can use `spring-boot-starter-oauth2-resource-server`.
+We expect this to be the most common form within a micro-services landscape, where a central gateway assumes the OAuth2 client role.
+It is also what we will use throughout this blog post, although much of the lessons learned apply to other forms as well.
+
+If your service will act as an OAuth2 client to acquire JSON Web Tokens, you'll most likely want to use `spring-boot-starter-oauth2-client`.
+
+Both starters will provide you with any transitive dependencies you might need for the most common security aspects.
+
+== What happens when you add dependency?
 
 
-=== Configuration
+
+== Configuring web security
+
+
+== Configuring method security
+
+
+== Fixing our tests
+
+=== `@WebMvcTest()`
+
+=== `@SpringBootTest()`
+
+=== Integration tests
+
+=== Non-web tests
+
+
+
 [source,yaml]
 ----
 ----
-
-=== Testing
 
 == Conclusion
 
