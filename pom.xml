@@ -55,6 +55,7 @@
 		<module>limit-spring-data-queries</module>
 		<module>permission-evaluator</module>
 		<module>spring-cloud-gateway-oidc-tokenrelay</module>
+		<module>resource-server-testing</module>
 	</modules>
 	<build>
 		<plugins>

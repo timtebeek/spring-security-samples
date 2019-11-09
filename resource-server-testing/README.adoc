@@ -1,0 +1,19 @@
+= Resource server testing
+
+
+
+== Implementation
+
+
+=== Configuration
+[source,yaml]
+----
+----
+
+=== Testing
+
+== Conclusion
+
+
+== References
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#oauth2resourceserver[OAuth 2.0 Resource Server] +
