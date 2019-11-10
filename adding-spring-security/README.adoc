@@ -100,7 +100,30 @@ Perfect! Now we have the basics in place to pass our authentication to our appli
 Now we have an application that requires an OpenID Connect provider on startup, and a valid JWT for any request.
 Neither plays well with the tests we have, so we're going to have to fix each of the four different test flavors we have.
 
-First up is our `LeaveRequestServiceTest`, which now fails with  a 
+==== WebMvcTests
+First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
+Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
+We want to authenticate for these web requests, which we can achieve by adding the https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/test.html[`spring-security-test`] library to our test class path.
+This library provides us with the `@WithMockUser` annotation, among others, which we add to our test class or any of it's methods.
+If you rerun the tests, you'll find the `GET` requests now pass.
+However, the `POST` requests keep failing with a `403` response.
+As it turns out, debug logging points us in the right direction:
+----
+2019-11-10 14:44:44.460 DEBUG 23815 --- [           main] o.s.security.web.csrf.CsrfFilter         : Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
+----
+By default Spring Security adds https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#servlet-csrf[Cross Site Request Forgery] protection for `POST` requests.
+This protects our resource server from malicious requests; and we choose not the disable this just yet.
+Because of this, we do have to add `csrf` tokens to our POST requests, which is again provided through `spring-security-test`.
+With both `@WithMockUser` and `post("...").with(csrf())` in place, now all tests within `LeaveRequestControllerWebMvcTest` pass again!
+
+==== SpringBootTest with WebEnvironment.MOCK
+Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start.
+While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
+Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
+We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which by passes the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
+When we add such a field to our tests we can see that they now pass again, even when our OpenID Connect provider is unavailable.
+
+==== SpringBootTest with WebEnvironment.RANDOM_PORT
 
 
 == Configuring web security
@@ -108,6 +131,8 @@ Next up: configuring our application security such that we can restrict access p
 
 
 == Configuring method security
+
+=== Service tests
 
 
 == Fixing our tests
