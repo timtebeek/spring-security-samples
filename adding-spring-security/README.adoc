@@ -122,6 +122,7 @@ While locally this might be manageable, for CI/CD environments and general test 
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
 We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
 With the MockBean in place we can see the test application context now starts up again, even when the OpenID Connect provider is unavailable.
+
 At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
 We add the same fixes as previously applied to `LeaveRequestControllerWebMvcTest` to make all tests pass again.
 
@@ -132,27 +133,22 @@ But, since we're not giving up easily, there's still a way to get things working
 We start out by manipulating Keycloak to give us a JSON Web Token with a ridiculously long lifespan; It's the same token as you've seen before above.
 Next, we add `spring-cloud-contract-wiremock` to our test class path, and wire it up to serve our recorded Keycloak OpenID Connect mappings during our tests.
 Finally, we add a `RestTemplateCustomizer` which appends the JWT to any test requests.
+
 This approach might not be feasible for your OpenID Connect provider, it might not scale as you need different roles and tokens, and in general seems like a bad idea.
 There's little in terms of alternatives though, save for further test application context hacks which defeat your testing of token handling.
 
-== Configuring web security
-Next up: configuring our application security such that we can restrict access properly.
+== Roles and authorizations
+Our application now requires a JWT with every request, and decodes that into an Authentication.
+While this is all fine and needed; it does not yet achieve much in terms of security; anyone can still authenticate, file and view leave requests and approve or deny them as they see fit.
+We need to configure our application with some common sense roles and restrictions.
+For instance: we only want users to submit and view requests for themselves; while on HR employees can approve or deny requests.
 
+=== Configuring method security
+Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
+We've added a variety of security annotation and expressions, all of which are documented extensively in https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/authorization.html[the Authorization chapter of Spring Security].
+The security annotations are enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`.
 
-== Configuring method security
-
-=== Service tests
-
-
-== Fixing our tests
-
-=== `@WebMvcTest()`
-
-=== `@SpringBootTest()`
-
-=== Integration tests
-
-=== Non-web tests
+== Fixing our tests; part 2
 
 
 
