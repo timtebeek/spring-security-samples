@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = LeaveRequestController.class)
-class LeaveRequestControllerTest {
+class LeaveRequestControllerWebMvcTest {
 
 	@MockBean
 	private LeaveRequestService service;

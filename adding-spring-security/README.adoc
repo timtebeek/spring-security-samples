@@ -12,12 +12,17 @@ We will walk you through adding Spring Security to an existing application,
 by explaining what happens when you first add the dependencies, what to do next, and how to fix your tests.
 
 == Our initial application
-To showcase adding Spring Security we've developed a small application, along with some tests of it's functionalities.
-Imagine a Human Resources department that has a small application to track leave requests.
+To showcase adding Spring Security we've developed a small application, along with some tests of it's functionality.
+Imagine a Human Resources department that has a small application to track and approve/deny leave requests.
 Initially this application was only used from within the HR department, who received requests via phone or email.
 
+Now we want to open up this application to all employees, so they can file their leave requests themselves.
+Anyone from the HR department can then either approve or deny a leave request.
+Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-samples/tree/master/adding-spring-security/leaveapp-initial[leaveapp-initial].
+
 == Which dependency to add?
-Even figuring out which dependency to add can be difficult these days!
+The first step in adding security to our application is picking the right dependency to add to our project.
+However, even figuring out which dependency to add can be difficult these days!
 Looking at https://start.spring.io/#!type=maven-project&&jvmVersion=11&dependencies=security,oauth2-client,cloud-security,cloud-oauth2,oauth2-resource-server[start.spring.io]
 we can see there are already 5 different dependencies related to Spring Security and/or OAuth2.
 In part this is down to a https://spring.io/blog/2018/01/30/next-generation-oauth-2-0-support-with-spring-security[restructuring of OAuth2 support],
@@ -51,6 +56,9 @@ As it turns out, there's a curious new logline from https://github.com/spring-pr
 Using generated security password: fcf786f4-797b-499b-9abc-2cee4037edb3
 ----
 This auto configration triggers when no other security configuration has been provided.
+It sets up our application with a default user and generated password, as a fallback of sorts.
+After all, if you're adding Spring Security to your classpath you will want some form of security.
+At the very least it serves as a trigger to configure exactly what you want in your application.
 
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
@@ -65,13 +73,14 @@ spring:
           issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
 ----
 Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
-During development we will either use Keycloak or WireMock to serve the configured `issuer-uri` endpoint.
+During development we will use either Keycloak or WireMock to serve the configured `issuer-uri` endpoint.
 
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
 The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
+Unless you provide your own `WebSecurityConfigurerAdapter`, this sets up your application to required a JSON Web Token for each request.
 
-However, now we consistently get a `401 Unauthorized` response, since our requests lack a `Bearer` JSON Web Token.
+When we now call any application endpoint we consistently get a `401 Unauthorized` response, since our requests lack a `Authorization` header with  `Bearer` JSON Web Token.
 To solve this, we have to actually pass a Bearer token along with our requests.
 Here's a token and command to get your request through with a `HTTP/1.1 200`:
 
@@ -85,8 +94,17 @@ eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpu
 $ export token=eyJhbGc...
 $ http :8080/view/all "Authorization: Bearer ${token}" 
 ----
+Perfect! Now we have the basics in place to pass our authentication to our application.
+
+=== Fixing our tests; part 1
+Now we have an application that requires an OpenID Connect provider on startup, and a valid JWT for any request.
+Neither plays well with the tests we have, so we're going to have to fix each of the four different test flavors we have.
+
+First up is our `LeaveRequestServiceTest`, which now fails with  a 
+
 
 == Configuring web security
+Next up: configuring our application security such that we can restrict access properly.
 
 
 == Configuring method security
