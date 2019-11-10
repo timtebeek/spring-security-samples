@@ -120,8 +120,10 @@ With both `@WithMockUser` and `post("...").with(csrf())` in place, now all tests
 Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start.
 While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
-We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which by passes the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
-When we add such a field to our tests we can see that they now pass again, even when our OpenID Connect provider is unavailable.
+We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
+With the MockBean in place we can see the test application context now starts up again, even when the OpenID Connect provider is unavailable.
+At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
+We add the same fixes as previously applied to `LeaveRequestControllerWebMvcTest` to make all tests pass again.
 
 ==== SpringBootTest with WebEnvironment.RANDOM_PORT
 
