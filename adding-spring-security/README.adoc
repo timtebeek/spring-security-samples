@@ -73,7 +73,7 @@ spring:
           issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
 ----
 Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
-During development we will use either Keycloak or WireMock to serve the configured `issuer-uri` endpoint.
+During development we will either link:keycloak/README.adoc[use Keycloak] or link:keycloak/README.adoc[WireMock] to serve the configured `issuer-uri` endpoint.
 
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
@@ -126,7 +126,14 @@ At this point we see the same failure modes as we saw previously: `GET` requests
 We add the same fixes as previously applied to `LeaveRequestControllerWebMvcTest` to make all tests pass again.
 
 ==== SpringBootTest with WebEnvironment.RANDOM_PORT
-
+Our `LeaveRequestControllerSpringBootWebEnvRandomPortTest` puts as in quite a difficult spot;
+There's no clear route to easy test support for this approach, and we have to wonder if this is the best way to write application tests at all.
+But, since we're not giving up easily, there's still a way to get things working, even if it shows you maybe shouldn't.
+We start out by manipulating Keycloak to give us a JSON Web Token with a ridiculously long lifespan; It's the same token as you've seen before above.
+Next, we add `spring-cloud-contract-wiremock` to our test class path, and wire it up to serve our recorded Keycloak OpenID Connect mappings during our tests.
+Finally, we add a `RestTemplateCustomizer` which appends the JWT to any test requests.
+This approach might not be feasible for your OpenID Connect provider, it might not scale as you need different roles and tokens, and in general seems like a bad idea.
+There's little in terms of alternatives though, save for further test application context hacks which defeat your testing of token handling.
 
 == Configuring web security
 Next up: configuring our application security such that we can restrict access properly.

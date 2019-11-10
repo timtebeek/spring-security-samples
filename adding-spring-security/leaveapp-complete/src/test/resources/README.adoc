@@ -1,0 +1,21 @@
+= Using WireMock to serve `issuer-uri`
+
+Our tests need to connect to a OpenID Connect provider to bootstrap the application context.
+
+== Recording with WireMock
+We've previously ran WireMock in proxy mode to record the calls made to our Keycloak OpenID Connect provider:
+----
+java -jar wiremock-standalone-2.25.1.jar --record-mappings --proxy-all="http://localhost:8090"
+----
+
+The resulting `mappings` and `__files` can be found in this folder.
+
+== Running WireMock
+To serve the recorded mappings with WireMock we can run the same jar:
+----
+java -jar wiremock-standalone-2.25.1.jar --port 8090
+----
+
+== Verifying endpoint
+To verify the required endpoint is available, open up:
+http://localhost:8090/auth/realms/spring-cloud-gateway-realm/.well-known/openid-configuration
