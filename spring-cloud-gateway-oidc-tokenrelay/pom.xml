@@ -14,7 +14,7 @@
 		<module>mock-hotels-service</module>
 	</modules>
 	<properties>
-		<spring-cloud.version>Hoxton.RC1</spring-cloud.version>
+		<spring-cloud.version>Hoxton.RC2</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<!-- Minimal web interface in each sub module -->
