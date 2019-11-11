@@ -23,12 +23,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// Validate tokens through configured OpenID Provider
-		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
-		// Require authentication for all requests
-		http.authorizeRequests().anyRequest().authenticated();
-		// Allow showing pages within a frame
-		http.headers().frameOptions().sameOrigin();
+		http
+			// Require authentication for all requests
+			.authorizeRequests()
+				.anyRequest().authenticated()
+				.and()
+			// Validate tokens through configured OpenID Provider
+			.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 	}
 
 	private static JwtAuthenticationConverter jwtAuthenticationConverter() {

@@ -32,7 +32,7 @@ In short we now advise against using the Spring Cloud Starter dependencies, and 
 
 If your service will act as an OAuth2 resource server, by accepting JSON Web Tokens passed in from a gateway, you can use `spring-boot-starter-oauth2-resource-server`.
 We expect this to be the most common form within a micro-services landscape, where a central gateway assumes the OAuth2 client role.
-It is also what we will use throughout this blog post, although much of the lessons learned apply to other forms as well.
+It is also what we will use throughout this blog post, although much of the details below apply to other forms as well.
 
 If your service will act as an OAuth2 client to acquire JSON Web Tokens, you'll most likely want to use `spring-boot-starter-oauth2-client`.
 
@@ -51,14 +51,13 @@ If we try to open the same endpoint from the commandline we immediately get a `H
 We turn to the application logs to find out what happened in our application.
 As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
 ----
-2019-11-09 17:00:46.665  INFO 709 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: fcf786f4-797b-499b-9abc-2cee4037edb3
+INFO --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
+  Using generated security password: fcf786f4-797b-499b-9abc-2cee4037edb3
 ----
-This auto configration triggers when no other security configuration has been provided.
+This auto configuration triggers when no other security configuration has been provided.
 It sets up our application with a default user and generated password, as a fallback of sorts.
-After all, if you're adding Spring Security to your classpath you will want some form of security.
-At the very least it serves as a trigger to configure exactly what you want in your application.
+After all, if you're adding Spring Security to your class path you will want some form of security.
+At the very least the log line and dialog serve as a reminder to configure exactly what you want in your application.
 
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
@@ -87,7 +86,7 @@ Here's a token and command to get your request through with a `HTTP/1.1 200`:
 .Click to show full JSON Web Token
 [%collapsible]
 ====
-eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpuZlRUZW1hSkxoZ183Z0dULTZiSFlVIn0.eyJqdGkiOiI4MTAzNTI4MC04YTdjLTRjOTktYWMzMi05MDJkMTY0YWVjZWEiLCJleHAiOjE2NTk3MjcxMzgsIm5iZiI6MCwiaWF0IjoxNTczMzI3MTM4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwOTAvYXV0aC9yZWFsbXMvc3ByaW5nLWNsb3VkLWdhdGV3YXktcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOWJhNDA5YmYtM2ZhOC00MjdjLWI4YmMtOGFlNjYwNmUyOTAyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktY2xpZW50Iiwibm9uY2UiOiJnTVdjMTR1WHZMQk9QVlNTRG96NWFUMWNQSUNoVmZzMXFNVHhSWGJPWDBJIiwiYXV0aF90aW1lIjoxNTczMzI3MTM4LCJzZXNzaW9uX3N0YXRlIjoiYWExMmJlZDgtYTlkNC00YTBlLTgyYjAtNTIxMDUwZTAwODA1IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcGhvbmUgbWljcm9wcm9maWxlLWp3dCBvZmZsaW5lX2FjY2VzcyBwcm9maWxlIGVtYWlsIGFkZHJlc3MiLCJ1cG4iOiJzcHJpbmctY2xvdWQtZ2F0ZXdheS11c2VyIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhZGRyZXNzIjp7fSwiZ3JvdXBzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktdXNlciJ9.HoQ86lJhILWhvZUfefJdxHdTqb4jZFkdWTKHzOAxhNApc9YIgv1zLLlMAXFJHgL1ITY9R1Ke2-SUqMG8d1djPA6D6YRJn4MpWyiS66qpBuRNHg47c9dc-cBLUkXLy9nBZFget87_ZHNhXG_v3MILhH0VbKIWafOTdoJLhJOSy6aQ44iAMjCKXZgMv7EcfvXmwAquaJGGB_fgUa2FXztnt_Fwq4nLgbkU-UYXIqycJVb1gaBbfHmbPpq4pZrkc2Q_9d5FSLGeHIkGmeq17kJLKDzXmvDFu3J5X43nSIaH_WhqSeKkeYAb5HK_xXJnQhRSzku9kYm3dd7z9GBJuSMpRQ
+eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpuZlRUZW1hSkxoZ183Z0dULTZiSFlVIn0.eyJqdGkiOiI0OWFkZmVlOS02MGEwLTQxMTItOGI1OS1hZWEwOTliYjlmYTIiLCJleHAiOjE2NTk4OTg3NjYsIm5iZiI6MCwiaWF0IjoxNTczNDk4NzY2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwOTAvYXV0aC9yZWFsbXMvc3ByaW5nLWNsb3VkLWdhdGV3YXktcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiYWQ4MjRkZmMtNmFmZi00NWEzLWJlOWQtOTU0ZDUwZmJkYjdhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktY2xpZW50Iiwibm9uY2UiOiJwMGtsejZlc0VYNnYtWU8tXzVGd2JITk95N2NudklibEsweTBiWi1iUVpNIiwiYXV0aF90aW1lIjoxNTczNDk4NzY2LCJzZXNzaW9uX3N0YXRlIjoiZjIyMjY4ZTAtOTJlZS00MDU4LTgzMzctMzkyNDg4YjJlNTQwIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcGhvbmUgbWljcm9wcm9maWxlLWp3dCBvZmZsaW5lX2FjY2VzcyBwcm9maWxlIGVtYWlsIGFkZHJlc3MiLCJ1cG4iOiJhbGljZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhZGRyZXNzIjp7fSwibmFtZSI6IkFsaWNlIiwiZ3JvdXBzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWxpY2UiLCJnaXZlbl9uYW1lIjoiQWxpY2UifQ.hHK8E-01eFb4UZtBjclVronp-6jfVbhxh9U0m0DEdYQE8YGWFCjMxUcfeI0Rx9zueeC_HJsFT4wcegs8Qh6Z2n7IGWbf0Vtg0fzVH9vFXkwbFBdbCZJz4MZ1Zc3cpC2UrSnuPDc8EIn1FQrKIEF8nqEcNzcL3ujxligvOern2A4xUS1GLqrLKmbPPbKocESZb75EMbmEPFDoctgI1n4vniOz9j242WxbcMjM7INeIsPCKWqvgaeYHOKlgW2CfHfsLPr_XQw5VvCMWJ1GHficCwwjyL-PeemHmBS6eO6EnHpl5Ftm7siATcZuJXQHTosb6b38Gkw2s6-yGQJcbQc01g
 ====
 [source,bash]
 ----
@@ -98,9 +97,9 @@ Perfect! Now we have the basics in place to pass our authentication to our appli
 
 === Fixing our tests; part 1
 Now we have an application that requires an OpenID Connect provider on startup, and a valid JWT for any request.
-Neither plays well with the tests we have, so we're going to have to fix each of the four different test flavors we have.
+Neither plays well with the tests we have, so we're going to have to fix each of the different test flavors we have.
 
-==== WebMvcTests
+==== @WebMvcTest
 First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
 Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
 We want to authenticate for these web requests, which we can achieve by adding the https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/test.html[`spring-security-test`] library to our test class path.
@@ -109,15 +108,17 @@ If you rerun the tests, you'll find the `GET` requests now pass.
 However, the `POST` requests keep failing with a `403` response.
 As it turns out, debug logging points us in the right direction:
 ----
-2019-11-10 14:44:44.460 DEBUG 23815 --- [           main] o.s.security.web.csrf.CsrfFilter         : Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
+DEBUG --- [main] o.s.security.web.csrf.CsrfFilter :
+  Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
 ----
 By default Spring Security adds https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#servlet-csrf[Cross Site Request Forgery] protection for `POST` requests.
 This protects our resource server from malicious requests; and we choose not the disable this just yet.
-Because of this, we do have to add `csrf` tokens to our POST requests, which is again provided through `spring-security-test`.
+Because of this, we do have to add `csrf` tokens to our POST requests, which is provided through a `CsrfRequestPostProcessor` from `spring-security-test`.
+
 With both `@WithMockUser` and `post("...").with(csrf())` in place, now all tests within `LeaveRequestControllerWebMvcTest` pass again!
 
-==== SpringBootTest with WebEnvironment.MOCK
-Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start.
+==== @SpringBootTest with WebEnvironment.MOCK
+Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start the application context.
 While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
 We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
@@ -126,7 +127,7 @@ With the MockBean in place we can see the test application context now starts up
 At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
 We add the same fixes as previously applied to `LeaveRequestControllerWebMvcTest` to make all tests pass again.
 
-==== SpringBootTest with WebEnvironment.RANDOM_PORT
+==== @SpringBootTest with WebEnvironment.RANDOM_PORT
 Our `LeaveRequestControllerSpringBootWebEnvRandomPortTest` puts as in quite a difficult spot;
 There's no clear route to easy test support for this approach, and we have to wonder if this is the best way to write application tests at all.
 But, since we're not giving up easily, there's still a way to get things working, even if it shows you maybe shouldn't.
@@ -139,21 +140,73 @@ There's little in terms of alternatives though, save for further test applicatio
 
 == Roles and authorizations
 Our application now requires a JWT with every request, and decodes that into an Authentication.
-While this is all fine and needed; it does not yet achieve much in terms of security; anyone can still authenticate, file and view leave requests and approve or deny them as they see fit.
+While this is all fine and needed; it does not yet achieve much in terms of security; anyone can authenticate, file and view leave requests and approve or deny them as they see fit.
 We need to configure our application with some common sense roles and restrictions.
-For instance: we only want users to submit and view requests for themselves; while on HR employees can approve or deny requests.
+For instance:
+
+- we want users to only submit and view requests for themselves;
+- only HR employees can approve or deny requests, and view all requests.
 
 === Configuring method security
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
-We've added a variety of security annotation and expressions, all of which are documented extensively in https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/authorization.html[the Authorization chapter of Spring Security].
-The security annotations are enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`.
+We'll add a variety of security annotation and expressions, all of which are documented extensively in https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/authorization.html[the Authorization chapter of Spring Security].
+The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
-== Fixing our tests; part 2
+[source,java]
+----
+@PreAuthorize("#employee == authentication.name or hasRole('HR')")
+public List<LeaveRequest> retrieveFor(String employee) {
+  return repo.findByEmployee(employee);
+}
 
+@RolesAllowed("HR")
+public List<LeaveRequest> retrieveAll() {
+  return repo.findAll();
+}
+----
 
+=== Fixing our tests; part 2
+Now that we've added security restrictions, we have to do another round of test fixes to match our security restrictions.
+Our test user name should now match the employee name for leave requests submitted or viewed.
+To approve or deny leave requests, the active user should have the "HR" role.
+
+==== @SpringBootTest with WebEnvironment.NONE
+Our `LeaveRequestServiceTest` methods now also need an active user, where this was not needed before.
+We use the same `@WithMockUser` as we've seen earlier, with arguments added to match either the required user name, or the required "HR" role.
+[source,java]
+----
+@Test
+@WithMockUser(username = "Alice")
+void testRequest() {
+  LeaveRequest leaveRequest = service.request("Alice", of(2019, 11, 30), of(2019, 12, 03));
+  verify(repository).save(leaveRequest);
+}
+
+@Test
+@WithMockUser(roles = "HR")
+void testApprove() {
+  LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 03), PENDING));
+  Optional<LeaveRequest> approved = service.approve(saved.getId());
+  [...]
+}
+----
+
+==== @SpringBootTest with WebEnvironment.MOCK
+Similar to `LeaveRequestServiceTest`, we also need to define the same mock user attributes here as we did for our `@WebMvcTest`.
+
+==== @SpringBootTest with WebEnvironment.RANDOM_PORT
+Proving ever more troublesome, we have to make some more substantial changes to `LeaveRequestControllerSpringBootWebEnvRandomPortTest`.
+We need a second token for a user with the `HR` role to be able to test the approve/deny flows.
+So we again manipulate Keycloak to give us another token with the specified role, and pass that in the relevant tests.
+We can no longer use the `RestTemplateCustomizer` from before, and instead have to use `TestRestTemplate#exchange()` within each test.
+With our tests updated and rerun, we find our token handling to be incomplete!
+
+By default our tokens are decoded to have a UUID username, and the Keycloak realm access roles are not mapped at all yet.
+None of the other test approaches surfaced this omission, so there's some value to these tests after all.
+
+To provide the missing functionality we add a `UsernameSubClaimAdapter` and `KeycloakRealmRoleConverter`, which we wire up in `SecurityConfig`.
+These details will differ per OpenID Connect provider, along with any configured roles.
 
 == Conclusion
-
-
-== References
-https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#oauth2resourceserver[OAuth 2.0 Resource Server] +
+We have now added Spring Security to our application, to allow any user to authenticate, while only granting some users special privileges.
+This application could of course be expanded to include further protection against exploits, auditing and even more security aspects, but we leave those for another time.
