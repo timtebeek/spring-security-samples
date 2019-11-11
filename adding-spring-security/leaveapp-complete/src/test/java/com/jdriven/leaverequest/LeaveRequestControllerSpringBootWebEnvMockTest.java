@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-@WithMockUser
 class LeaveRequestControllerSpringBootWebEnvMockTest {
 
 	/**
@@ -47,6 +46,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser("Alice")
 	void testRequest() throws Exception {
 		mockmvc.perform(post("/request/{employee}", "Alice")
 				.with(csrf())
@@ -59,6 +59,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "HR")
 	void testApprove() throws Exception {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
@@ -71,6 +72,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "HR")
 	void testApproveMissing() throws Exception {
 		mockmvc.perform(post("/approve/{id}", UUID.randomUUID())
 				.with(csrf()))
@@ -78,6 +80,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "HR")
 	void testDeny() throws Exception {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/deny/{id}", saved.getId())
@@ -89,6 +92,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser("Alice")
 	void testViewId() throws Exception {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
@@ -100,12 +104,14 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "HR") // Alice would get a AccessDeniedException on missing returnObject
 	void testViewIdMissing() throws Exception {
 		mockmvc.perform(get("/view/id/{id}", UUID.randomUUID()))
 				.andExpect(status().isNoContent());
 	}
 
 	@Test
+	@WithMockUser("Alice")
 	void testViewEmployee() throws Exception {
 		repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
 		mockmvc.perform(get("/view/employee/{employee}", "Alice"))
@@ -116,6 +122,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "HR")
 	void testViewAll() throws Exception {
 		repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
 		mockmvc.perform(get("/view/all"))
