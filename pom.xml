@@ -49,6 +49,7 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<modules>
+		<module>adding-spring-security</module>
 		<module>access-decision-voter</module>
 		<module>audit-spring-data-entities</module>
 		<module>gateway</module>
