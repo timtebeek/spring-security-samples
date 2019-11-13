@@ -79,9 +79,9 @@ Looking at the logs we no longer see the generated password; Great!
 The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
 Unless you provide your own `WebSecurityConfigurerAdapter`, this sets up your application to required a JSON Web Token for each request.
 
-When we now call any application endpoint we consistently get a `401 Unauthorized` response, since our requests lack a `Authorization` header with  `Bearer` JSON Web Token.
+When we now call any application endpoint we consistently get a `401 Unauthorized` response, since our requests lack an `Authorization` header with  `Bearer` JSON Web Token.
 To solve this, we have to actually pass a Bearer token along with our requests.
-Here's a token and command to get your request through with a `HTTP/1.1 200`:
+Here's a token and https://httpie.org[HTTPie] command to get your request through with a `HTTP/1.1 200`:
 
 .Click to show full JSON Web Token
 [%collapsible]
@@ -99,7 +99,11 @@ Perfect! Now we have the basics in place to pass our authentication to our appli
 Now we have an application that requires an OpenID Connect provider on startup, and a valid JWT for any request.
 Neither plays well with the tests we have, so we're going to have to fix each of the different test flavors we have.
 
-==== @WebMvcTest
+We've added four different types of tests which each use a full or partial Spring application context, to simulate what you might find in an existing application.
+They are identified below using the annotation and argument that bootstraps the test application context.
+We'll go over each test and the changes needed to make them pass again.
+
+==== @WebMvcTest with controller
 First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
 Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
 We want to authenticate for these web requests, which we can achieve by adding the https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/test.html[`spring-security-test`] library to our test class path.
