@@ -50,6 +50,7 @@ If we try to open the same endpoint from the commandline we immediately get a `H
 
 We turn to the application logs to find out what happened in our application.
 As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
+[source,text]
 ----
 INFO --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
   Using generated security password: fcf786f4-797b-499b-9abc-2cee4037edb3
@@ -107,10 +108,17 @@ We'll go over each test and the changes needed to make them pass again.
 First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
 Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
 We want to authenticate for these web requests, which we can achieve by adding the https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/test.html[`spring-security-test`] library to our test class path.
-This library provides us with the `@WithMockUser` annotation, among others, which we add to our test class or any of it's methods.
+This library provides us with `SecurityMockMvcRequestPostProcessors#jwt()`, among others, which we add to our test methods to have them propagate a JWT with each request.
+[source,java]
+----
+mockmvc.perform(get("/view/id/{id}", UUID.randomUUID())
+  .with(jwt(builder -> builder.subject("Alice"))))
+  .andExpect(status().isOk())
+----
 If you rerun the tests, you'll find the `GET` requests now pass.
 However, the `POST` requests keep failing with a `403` response.
 As it turns out, debug logging points us in the right direction:
+[source,text]
 ----
 DEBUG --- [main] o.s.security.web.csrf.CsrfFilter :
   Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
@@ -119,7 +127,7 @@ By default Spring Security adds https://docs.spring.io/spring-security/site/docs
 This protects our resource server from malicious requests; and we choose not the disable this just yet.
 Because of this, we do have to add `csrf` tokens to our POST requests, which is provided through a `CsrfRequestPostProcessor` from `spring-security-test`.
 
-With both `@WithMockUser` and `post("...").with(csrf())` in place, now all tests within `LeaveRequestControllerWebMvcTest` pass again!
+With both `get("...").with(jwt())` and `post("...").with(jwt()).with(csrf())` in place, now all tests within `LeaveRequestControllerWebMvcTest` pass again!
 
 ==== @SpringBootTest with WebEnvironment.MOCK
 Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start the application context.
