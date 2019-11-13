@@ -61,7 +61,7 @@ At the very least the log line and dialog serve as a reminder to configure exact
 
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
-https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#oauth2resourceserver[As indicated in the documentation], configuration takes the form of:
+https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/oauth2.html#oauth2resourceserver[As indicated in the documentation], configuration takes the form of:
 [source,yaml]
 ----
 spring:
@@ -209,4 +209,5 @@ These details will differ per OpenID Connect provider, along with any configured
 
 == Conclusion
 We have now added Spring Security to our application, to allow any user to authenticate, while only granting some users special privileges.
+The full source code with Spring Security added can be found in https://github.com/timtebeek/spring-security-workshop/tree/master/adding-spring-security/leaveapp-complete[leaveapp-complete].
 This application could of course be expanded to include further protection against exploits, auditing and even more security aspects, but we leave those for another time.
