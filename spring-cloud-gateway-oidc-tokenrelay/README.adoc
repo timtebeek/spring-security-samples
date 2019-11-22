@@ -228,7 +228,7 @@ If you've previously used `spring-security-oauth` you might now be wondering:
 
 > What ever happened to `@EnableResourceServer`, `@EnableOAuth2Client`, `@EnableOAuth2Sso` and `ResourceServerConfigurer`?
 
-The https://spring.io/blog/2018/01/30/next-generation-oauth-2-0-support-with-spring-security[Spring Security OAuth] project containing these classes has been put into maintenance mode, with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
+The https://spring.io/blog/2019/11/14/spring-security-oauth-2-0-roadmap-update[Spring Security OAuth] project containing these classes has been put into maintenance mode, with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
 Going forward we suggest you:
 
 - remove any dependency on:
