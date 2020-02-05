@@ -63,6 +63,8 @@ At the very least the log line and dialog serve as a reminder to configure exact
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
 https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/oauth2.html#oauth2resourceserver[As indicated in the documentation], configuration takes the form of:
+
+.application.yml
 [source,yaml]
 ----
 spring:
