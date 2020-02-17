@@ -18,5 +18,19 @@
 			<h2>Welcome <a th:href="@{/whoami}"><span sec:authentication="name">user</span></a>!</h2>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col">
+			<form action="#" th:action="@{/search}" th:object="${searchModel}" method="post">
+				<input name="submit" type="submit" value="Search flights" class="btn btn-primary" />
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<ul th:if="${flights}">
+				<li th:each="flight : ${flights}"><div th:text="${flight}"></div></li>
+			</ul>
+		</div>
+	</div>
 </body>
 </html>

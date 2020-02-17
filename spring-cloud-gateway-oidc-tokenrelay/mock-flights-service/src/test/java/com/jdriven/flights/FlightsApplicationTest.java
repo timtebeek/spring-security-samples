@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +30,13 @@ class FlightsApplicationTest {
 		mockmvc.perform(get("/").with(jwt(builder -> builder.subject("Subject A"))))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Welcome <a href=\"/whoami\"><span>Subject A</span></a>!")));
+	}
+
+	@Test
+	void testSearchFlights() throws Exception {
+		mockmvc.perform(post("/search").with(jwt(builder -> builder.subject("Subject A"))))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Flight one")));
 	}
 
 }
