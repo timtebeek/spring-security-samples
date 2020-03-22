@@ -23,7 +23,7 @@ class HotelsApplicationTest {
 
 	@Test
 	void testGetIndex() throws Exception {
-		mockmvc.perform(get("/").with(jwt(builder -> builder.subject("Subject A"))))
+		mockmvc.perform(get("/").with(jwt().jwt(builder -> builder.subject("Subject A"))))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Welcome <a href=\"/whoami\"><span>Subject A</span></a>!")));
 	}
