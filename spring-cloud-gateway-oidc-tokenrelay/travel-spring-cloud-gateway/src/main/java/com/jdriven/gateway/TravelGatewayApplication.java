@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,11 +35,11 @@ public class TravelGatewayApplication {
 	@ResponseBody
 	public Map<String, Object> index(
 			@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
-			@AuthenticationPrincipal OAuth2User oauth2User) {
+			@AuthenticationPrincipal OidcUser oidcUser) {
 		Map<String, Object> model = new HashMap<>();
 		model.put("clientName", authorizedClient.getClientRegistration().getClientName());
-		model.put("userName", oauth2User.getName());
-		model.put("userAttributes", oauth2User.getAttributes());
+		model.put("userName", oidcUser.getName());
+		model.put("userAttributes", oidcUser.getAttributes());
 		return model;
 	}
 
