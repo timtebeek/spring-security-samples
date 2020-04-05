@@ -56,7 +56,7 @@ public class ProxyConfig {
 				.headers(cleanedHeaders(request.headers().asHttpHeaders()))
 				.body(fromDataBuffers(request.exchange().getRequest().getBody()))
 				.attributes(attr))
-			.flatMap(WebClient.RequestHeadersSpec::exchange)
+			.flatMap(spec -> spec.exchange())
 			.flatMap(response -> ServerResponse.status(response.statusCode())
 				.headers(cleanedHeaders(response.headers().asHttpHeaders()))
 				.body(fromDataBuffers(response.body(toDataBuffers())))));
