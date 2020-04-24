@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>leaveapp-complete</artifactId>
 	<properties>
-		<spring-cloud.version>Hoxton.SR3</spring-cloud.version>
+		<spring-cloud.version>Hoxton.SR4</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<dependency>
