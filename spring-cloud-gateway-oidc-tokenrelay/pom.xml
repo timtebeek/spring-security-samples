@@ -13,9 +13,6 @@
 		<module>mock-flights-service</module>
 		<module>mock-hotels-service</module>
 	</modules>
-	<properties>
-		<spring-cloud.version>Hoxton.SR4</spring-cloud.version>
-	</properties>
 	<dependencies>
 		<!-- Minimal web interface in each sub module -->
 		<dependency>
@@ -59,7 +56,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
+				<version>2020.0.0-M1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
