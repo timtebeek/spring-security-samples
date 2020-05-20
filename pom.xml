@@ -16,7 +16,6 @@
 	<description>Spring Security 5 sample projects</description>
 	<properties>
 		<java.version>11</java.version>
-		<spring-security.version>5.3.1.RELEASE</spring-security.version>
 	</properties>
 	<modules>
 		<module>adding-spring-security</module>
