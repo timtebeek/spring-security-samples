@@ -18,11 +18,6 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
-		<!-- TokenRelayGatewayFilterFactory pending https://github.com/spring-cloud/spring-cloud-security/issues/175 -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-security</artifactId>
-		</dependency>
 		<!-- Mock OpenID Connect server -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
