@@ -32,17 +32,19 @@ body, html {
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<a class="navbar-brand" th:href="@{/}" href="#">Spring Cloud Gateway</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item"><a class="nav-link" target="micro-frontend-container" th:href="@{/flights/}">Flights</a></li>
-				<li class="nav-item"><a class="nav-link" target="micro-frontend-container" th:href="@{/hotels/}">Hotels</a></li>
-			</ul>
-			<span class="navbar-text"><a class="nav-link" th:href="@{/logout}">Logout <span sec:authentication="name">name</span></a></span>
+		<div class="container-fluid">
+			<a class="navbar-brand" th:href="@{/}" href="#">Spring Cloud Gateway</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item"><a class="nav-link" target="micro-frontend-container" th:href="@{/flights/}">Flights</a></li>
+					<li class="nav-item"><a class="nav-link" target="micro-frontend-container" th:href="@{/hotels/}">Hotels</a></li>
+				</ul>
+				<span class="navbar-text"><a class="nav-link" th:href="@{/logout}">Logout <span sec:authentication="name">name</span></a></span>
+			</div>
 		</div>
 	</nav>
 	<div class="frame-container">
