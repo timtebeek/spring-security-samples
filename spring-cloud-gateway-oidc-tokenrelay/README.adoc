@@ -208,11 +208,8 @@ spring:
 ----
 
 ==== Testing
-The Hotels and Flights service each take a slightly different approach to how the tests are implemented.
-The Flights service https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[swaps out the `JwtDecoder` bean for a mock].
-The Hotels service instead uses WireMock to play back a recorded Keycloak response, allowing the `JwtDecoder` to bootstrap normally.
-Both use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
-Which style fits you best depends on how thorough and which aspects of JWT handling you want to test specifically.
+The Hotels and Flights service both https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#testing-bearer-authentication[swap out the `JwtDecoder` bean for a mock].
+They use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
 
 == Conclusion
 With all this in place we have the basics of a functioning gateway.
