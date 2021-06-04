@@ -9,4 +9,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8091/auth/realms/spring-cloud-gateway-realm
+          issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
