@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 8090)
+@AutoConfigureWireMock(port = 8091)
 class HotelsApplicationTest {
 
 	@Autowired

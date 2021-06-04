@@ -1,12 +1,12 @@
 {
-	"issuer": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm",
-	"authorization_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/auth",
-	"token_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token",
-	"token_introspection_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token/introspect",
-	"userinfo_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/userinfo",
-	"end_session_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/logout",
-	"jwks_uri": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/certs",
-	"check_session_iframe": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/login-status-iframe.html",
+	"issuer": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm",
+	"authorization_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/auth",
+	"token_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token",
+	"token_introspection_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token/introspect",
+	"userinfo_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/userinfo",
+	"end_session_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/logout",
+	"jwks_uri": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/certs",
+	"check_session_iframe": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/login-status-iframe.html",
 	"grant_types_supported": [
 		"authorization_code",
 		"implicit",
@@ -82,7 +82,7 @@
 		"fragment",
 		"form_post"
 	],
-	"registration_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/clients-registrations/openid-connect",
+	"registration_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/clients-registrations/openid-connect",
 	"token_endpoint_auth_methods_supported": [
 		"private_key_jwt",
 		"client_secret_basic",
@@ -125,5 +125,5 @@
 		"S256"
 	],
 	"tls_client_certificate_bound_access_tokens": true,
-	"introspection_endpoint": "http://localhost:8090/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token/introspect"
+	"introspection_endpoint": "http://localhost:8091/auth/realms/spring-cloud-gateway-realm/protocol/openid-connect/token/introspect"
 }

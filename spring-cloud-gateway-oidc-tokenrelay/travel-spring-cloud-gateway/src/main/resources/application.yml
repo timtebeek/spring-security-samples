@@ -14,7 +14,7 @@ spring:
         registration:
           keycloak:
             client-id: spring-cloud-gateway-client
-            client-secret: 09939b0a-f1b0-4fff-926e-cb8afa72a09d
+            client-secret: 8b81dd52-2bb6-44ea-99be-d22450bd7309
 
   cloud:
     gateway:
@@ -46,3 +46,4 @@ logging:
         cloud.gateway: DEBUG
         http.server.reactive: DEBUG
         web.reactive: DEBUG
+        security: DEBUG
