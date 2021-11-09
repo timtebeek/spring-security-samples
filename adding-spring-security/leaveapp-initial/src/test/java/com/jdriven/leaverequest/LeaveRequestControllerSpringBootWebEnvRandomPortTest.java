@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import com.jdriven.leaverequest.LeaveRequest;
-import com.jdriven.leaverequest.LeaveRequestDTO;
-import com.jdriven.leaverequest.LeaveRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +39,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testRequest() throws Exception {
+	void testRequest() {
 		LocalDate from = of(2019, 11, 30);
 		LocalDate to = of(2019, 12, 3);
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.postForEntity("/request/{employee}?from={from}&to={to}",
@@ -56,7 +53,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testApprove() throws Exception {
+	void testApprove() {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.postForEntity("/approve/{id}", null,
 				LeaveRequestDTO.class, saved.getId());
@@ -67,14 +64,14 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testApproveMissing() throws Exception {
+	void testApproveMissing() {
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.postForEntity("/approve/{id}", null,
 				LeaveRequestDTO.class, UUID.randomUUID());
 		assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
 	}
 
 	@Test
-	void testDeny() throws Exception {
+	void testDeny() {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.postForEntity("/deny/{id}", null,
 				LeaveRequestDTO.class, saved.getId());
@@ -85,7 +82,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testViewId() throws Exception {
+	void testViewId() {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.getForEntity("/view/id/{id}",
 				LeaveRequestDTO.class, saved.getId());
@@ -96,7 +93,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testViewIdMissing() throws Exception {
+	void testViewIdMissing() {
 		ResponseEntity<LeaveRequestDTO> response = resttemplate.getForEntity("/view/id/{id}", LeaveRequestDTO.class,
 				UUID.randomUUID());
 		assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
@@ -106,7 +103,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	};
 
 	@Test
-	void testViewEmployee() throws Exception {
+	void testViewEmployee() {
 		repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		ResponseEntity<List<LeaveRequestDTO>> response = resttemplate.exchange("/view/employee/{employee}", GET, null,
 				typeref, "Alice");
@@ -117,7 +114,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	}
 
 	@Test
-	void testViewAll() throws Exception {
+	void testViewAll() {
 		repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		ResponseEntity<List<LeaveRequestDTO>> response = resttemplate.exchange("/view/all", GET, null, typeref);
 		assertThat(response.getStatusCode()).isEqualByComparingTo(OK);

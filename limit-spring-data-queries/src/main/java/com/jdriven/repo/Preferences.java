@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @ToString(callSuper = true)
 public class Preferences extends AbstractPersistable<Long> {
 
-	boolean darkMode = false;
+	boolean darkMode;
 
 	@OneToOne(optional = false)
 	private User user;

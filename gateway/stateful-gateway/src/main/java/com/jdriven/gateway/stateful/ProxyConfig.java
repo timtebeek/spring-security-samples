@@ -44,22 +44,22 @@ public class ProxyConfig {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
+ RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
 		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> proxy(WebClient webClient) {
+ RouterFunction<ServerResponse> proxy(WebClient webClient) {
 		return route(path(API_PREFIX + SERVICE_PARAM + CATCH_ALL_SUFFIX), request -> authorizedClient(request)
-			.map(attr -> webClient.method(request.method())
-				.uri(toBackendUri(request))
-				.headers(cleanedHeaders(request.headers().asHttpHeaders()))
-				.body(fromDataBuffers(request.exchange().getRequest().getBody()))
-				.attributes(attr))
-			.flatMap(spec -> spec.exchange())
-			.flatMap(response -> ServerResponse.status(response.statusCode())
-				.headers(cleanedHeaders(response.headers().asHttpHeaders()))
-				.body(fromDataBuffers(response.body(toDataBuffers())))));
+				.map(attr -> webClient.method(request.method())
+						.uri(toBackendUri(request))
+						.headers(cleanedHeaders(request.headers().asHttpHeaders()))
+						.body(fromDataBuffers(request.exchange().getRequest().getBody()))
+						.attributes(attr))
+				.flatMap(spec -> spec.exchange())
+				.flatMap(response -> ServerResponse.status(response.statusCode())
+						.headers(cleanedHeaders(response.headers().asHttpHeaders()))
+						.body(fromDataBuffers(response.body(toDataBuffers())))));
 	}
 
 	private Consumer<HttpHeaders> cleanedHeaders(final HttpHeaders httpHeaders) {
