@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
+ JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
 		String issuerUri = properties.getJwt().getIssuerUri();
 		NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
 		// Use preferred_username from claims as authentication name, instead of UUID subject

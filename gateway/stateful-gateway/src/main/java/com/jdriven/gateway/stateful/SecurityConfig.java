@@ -34,7 +34,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityWebFilterChain securityWebFilterChain() {
+ SecurityWebFilterChain securityWebFilterChain() {
 		// the matcher for all paths that need to be secured (require a logged-in user)
 		final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(API_MATCHER_PATH);
 
@@ -42,14 +42,14 @@ public class SecurityConfig {
 		final ServerHttpSecurity http = this.context.getBean(ServerHttpSecurity.class);
 
 		return http
-			.authorizeExchange().matchers(apiPathMatcher).authenticated()
-			.anyExchange().permitAll()
-			.and().httpBasic().disable()
-			.csrf().disable()
-			.oauth2Client()
-			.and()
-			.oauth2Login()
-			.and()
-			.build();
+				.authorizeExchange().matchers(apiPathMatcher).authenticated()
+				.anyExchange().permitAll()
+				.and().httpBasic().disable()
+				.csrf().disable()
+				.oauth2Client()
+				.and()
+				.oauth2Login()
+				.and()
+				.build();
 	}
 }
