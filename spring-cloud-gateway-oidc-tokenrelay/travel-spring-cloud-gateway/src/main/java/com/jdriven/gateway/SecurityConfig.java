@@ -12,7 +12,7 @@ import org.springframework.security.web.server.header.XFrameOptionsServerHttpHea
 public class SecurityConfig {
 
 	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+ SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
 			ReactiveClientRegistrationRepository clientRegistrationRepository) {
 		// Authenticate through configured OpenID Provider
 		http.oauth2Login();

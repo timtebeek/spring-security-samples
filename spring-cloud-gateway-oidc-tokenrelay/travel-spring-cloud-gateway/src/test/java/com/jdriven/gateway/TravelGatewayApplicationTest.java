@@ -20,14 +20,14 @@ class TravelGatewayApplicationTest {
 	private WebTestClient client;
 
 	@Test
-	void testGetIndexAnonymously() throws Exception {
+	void testGetIndexAnonymously() {
 		client.get().uri("/").exchange()
 				.expectStatus().is3xxRedirection()
 				.expectHeader().value(HttpHeaders.LOCATION, is("/oauth2/authorization/keycloak"));
 	}
 
 	@Test
-	void testGetIndexAuthenticated() throws Exception {
+	void testGetIndexAuthenticated() {
 		client.mutateWith(mockOidcLogin().idToken(builder -> builder.subject("Subject A")))
 				.get().uri("/").exchange()
 				.expectStatus().is2xxSuccessful()
@@ -35,7 +35,7 @@ class TravelGatewayApplicationTest {
 	}
 
 	@Test
-	void testGetHomeAuthenticated() throws Exception {
+	void testGetHomeAuthenticated() {
 		client.mutateWith(mockOidcLogin().idToken(builder -> builder.subject("Subject A")))
 				.get().uri("/home").exchange()
 				.expectStatus().is2xxSuccessful()

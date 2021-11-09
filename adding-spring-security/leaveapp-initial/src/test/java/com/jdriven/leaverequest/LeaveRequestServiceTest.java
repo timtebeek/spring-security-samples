@@ -26,13 +26,13 @@ class LeaveRequestServiceTest {
 
 	@Test
 	void testRequest() {
-		LeaveRequest leaveRequest = service.request("Alice", of(2019, 11, 30), of(2019, 12, 03));
+		LeaveRequest leaveRequest = service.request("Alice", of(2019, 11, 30), of(2019, 12, 3));
 		verify(repository).save(leaveRequest);
 	}
 
 	@Test
 	void testApprove() {
-		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 03), PENDING));
+		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		Optional<LeaveRequest> approved = service.approve(saved.getId());
 		verify(repository).findById(saved.getId());
 		assertThat(approved).isPresent();
@@ -42,7 +42,7 @@ class LeaveRequestServiceTest {
 
 	@Test
 	void testDeny() {
-		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 03), PENDING));
+		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		Optional<LeaveRequest> denied = service.deny(saved.getId());
 		verify(repository).findById(saved.getId());
 		assertThat(denied).isPresent();

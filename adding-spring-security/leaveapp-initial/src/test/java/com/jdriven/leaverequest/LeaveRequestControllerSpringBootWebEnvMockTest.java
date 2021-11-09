@@ -49,7 +49,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testApprove() throws Exception {
+	void testApprove() {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/approve/{id}", saved.getId()))
@@ -66,7 +66,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testDeny() throws Exception {
+	void testDeny() {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/deny/{id}", saved.getId()))
 				.andExpect(status().isAccepted())
@@ -76,7 +76,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testViewId() throws Exception {
+	void testViewId() {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
 		mockmvc.perform(get("/view/id/{id}", saved.getId()))

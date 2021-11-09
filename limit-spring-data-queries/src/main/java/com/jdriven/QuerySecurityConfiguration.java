@@ -9,7 +9,7 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class QuerySecurityConfiguration {
 	@Bean
-	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+ SecurityEvaluationContextExtension securityEvaluationContextExtension() {
 		return new SecurityEvaluationContextExtension();
 	}
 }
