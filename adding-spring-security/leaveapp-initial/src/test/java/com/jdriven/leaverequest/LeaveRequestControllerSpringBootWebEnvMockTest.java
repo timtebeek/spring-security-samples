@@ -2,8 +2,6 @@ package com.jdriven.leaverequest;
 
 import java.util.UUID;
 
-import com.jdriven.leaverequest.LeaveRequest;
-import com.jdriven.leaverequest.LeaveRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testApprove() {
+	void testApprove() throws Exception {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/approve/{id}", saved.getId()))
@@ -66,7 +64,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testDeny() {
+	void testDeny() throws Exception {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/deny/{id}", saved.getId()))
 				.andExpect(status().isAccepted())
@@ -76,7 +74,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	}
 
 	@Test
-	void testViewId() {
+	void testViewId() throws Exception {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
 		mockmvc.perform(get("/view/id/{id}", saved.getId()))
