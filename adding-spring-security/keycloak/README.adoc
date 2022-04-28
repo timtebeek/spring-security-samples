@@ -1,8 +1,8 @@
-# Keycloak
+= Keycloak
 
 We use keycloak as our OpenID Connect provider. To set it up:
 
-## Running keycloak
+== Running keycloak
 
 1. Start Keycloak through `docker-compose up`.
 2. Open http://localhost:8090 and login with username `admin` and password `Pa55w0rd`.
@@ -11,7 +11,7 @@ We use keycloak as our OpenID Connect provider. To set it up:
 5. Add a new user with username `spring-cloud-gateway-user`.
 6. Under credentials set user password to `password` with `Temporary: OFF`.
 
-## What you'll get
+== What you'll get
 
 * a realm named `spring-cloud-gateway-realm`.
 * a client named `spring-cloud-gateway-client` with:
@@ -23,7 +23,7 @@ We use keycloak as our OpenID Connect provider. To set it up:
 The gateway will authenticate with the client credentials to the realm.
 When redirected by the gateway you can login with the user credentials.
 
-## Cleaning up
+== Cleaning up
 
 1. Remove container through `docker-compose rm -f`.
 2. Remove volume through `docker volume prune`.

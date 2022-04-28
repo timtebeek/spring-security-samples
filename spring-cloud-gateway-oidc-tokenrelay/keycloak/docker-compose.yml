@@ -1,5 +1,5 @@
 version: '3'
-# from: https://github.com/keycloak/keycloak-containers/blob/master/docker-compose-examples/keycloak-postgres.yml
+# from: https://github.com/keycloak/keycloak-containers/blob/main/docker-compose-examples/keycloak-postgres.yml
 
 volumes:
   postgres_data:
@@ -7,7 +7,7 @@ volumes:
 
 services:
   postgres:
-      image: postgres
+      image: postgres:14
       volumes:
         - postgres_data:/var/lib/postgresql/data
       environment:
@@ -16,7 +16,7 @@ services:
         POSTGRES_PASSWORD: password
 
   keycloak:
-      image: jboss/keycloak:7.0.1
+      image: quay.io/keycloak/keycloak:legacy
       environment:
         DB_VENDOR: POSTGRES
         DB_ADDR: postgres

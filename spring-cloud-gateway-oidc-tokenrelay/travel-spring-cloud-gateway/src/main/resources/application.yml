@@ -14,7 +14,8 @@ spring:
         registration:
           keycloak:
             client-id: spring-cloud-gateway-client
-            client-secret: 8b81dd52-2bb6-44ea-99be-d22450bd7309
+            client-secret: k725YLf1lT3nC88Ki8L3plZa8Z3Jeo37
+            scope: openid
 
   cloud:
     gateway:
