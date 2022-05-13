@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 
-//As per: https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html5/#oauth2resourceserver-jwt-claimsetmapping-rename
+// As per: https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
 class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
 
 	private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
