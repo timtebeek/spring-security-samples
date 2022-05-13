@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.jdriven.leaverequest.LeaveRequest.Status.APPROVED;
 import static com.jdriven.leaverequest.LeaveRequest.Status.PENDING;
 import static java.time.LocalDate.of;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -50,7 +49,6 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	void testRequest() throws Exception {
 		mockmvc.perform(post("/request/{employee}", "Alice")
 				.with(jwt().jwt(builder -> builder.subject("Alice")))
-				.with(csrf())
 				.param("from", "2019-11-30")
 				.param("to", "2019-12-03"))
 				.andExpect(status().isAccepted())
@@ -64,8 +62,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 		LeaveRequest saved = repository
 				.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/approve/{id}", saved.getId())
-				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR")))
-				.with(csrf()))
+				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 				.andExpect(status().isAccepted())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.employee").value("Alice"))
@@ -75,8 +72,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	@Test
 	void testApproveMissing() throws Exception {
 		mockmvc.perform(post("/approve/{id}", UUID.randomUUID())
-				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR")))
-				.with(csrf()))
+				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 				.andExpect(status().isNoContent());
 	}
 
@@ -84,8 +80,7 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 	void testDeny() throws Exception {
 		LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
 		mockmvc.perform(post("/deny/{id}", saved.getId())
-				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR")))
-				.with(csrf()))
+				.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 				.andExpect(status().isAccepted())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.employee").value("Alice"))

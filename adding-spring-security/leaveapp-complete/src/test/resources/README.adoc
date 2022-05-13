@@ -11,11 +11,9 @@ java -jar wiremock-standalone-2.25.1.jar --record-mappings --proxy-all="http://l
 The resulting `mappings` and `__files` can be found in this folder.
 
 == Running WireMock
-To serve the recorded mappings with WireMock we can run the same jar:
-----
-java -jar wiremock-standalone-2.25.1.jar --port 8090
-----
+To serve the recorded mappings with WireMock:
 
-== Verifying endpoint
-To verify the required endpoint is available, open up:
-http://localhost:8090/auth/realms/spring-cloud-gateway-realm/.well-known/openid-configuration
+0. https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.25.1/wiremock-standalone-2.25.1.jar[Download WireMock standalone]
+1. Navigate to: `spring-security-workshop/adding-spring-security/leaveapp-complete/src/test/resources/`
+2. Run `java -jar wiremock-standalone-2.25.1.jar --port 8090`
+3. Verify you get a JSON response from: http://localhost:8090/auth/realms/spring-cloud-gateway-realm/.well-known/openid-configuration
