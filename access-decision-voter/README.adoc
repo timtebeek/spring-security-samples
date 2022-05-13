@@ -86,5 +86,5 @@ https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/acl
 This provides a very powerful method of encoding, storing and retrieving access permissions.
 
 == References
-https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/index.html[Authorization] +
-https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/method-security.html[Method Security] +
+- https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/index.html[Authorization]
+- https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/method-security.html[Method Security]
