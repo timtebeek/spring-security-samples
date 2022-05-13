@@ -142,7 +142,8 @@ If you now rerun the tests, you'll find all tests within `LeaveRequestController
 Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start the application context.
 While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
-We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
+We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, 
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/test/mockmvc/oauth2.html#testing-jwt[as alluded to in the documentation].
 With the MockBean in place we can see the test application context now starts up again, even when the OpenID Connect provider is unavailable.
 
 At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
@@ -170,7 +171,8 @@ For instance:
 
 === Configuring method security
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
-We'll add a variety of security annotation and expressions, all of which are documented extensively in https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/authorization.html[the Authorization chapter of Spring Security].
+We'll add a variety of security annotation and expressions, all of which are documented extensively in 
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/index.html[the Authorization chapter of Spring Security].
 The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
 [source,java]
