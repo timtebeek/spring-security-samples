@@ -9,7 +9,6 @@
 	<artifactId>adding-spring-security</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>leaveapp-initial</module>
 		<module>leaveapp-complete</module>
 	</modules>
 </project>
