@@ -234,7 +234,6 @@ Going forward we suggest you:
 - replace these with `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, as outlined above.
 
 == References
-https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway] +
-https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/login/core.html[OAuth 2.0 Login] +
-https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/index.html[OAuth 2.0 Resource Server] +
-https://docs.spring.io/spring-cloud-security/docs/2.2.5.RELEASE/reference/html/[Spring Cloud Security] +
+- https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway]
+- https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/login/core.html[OAuth 2.0 Login]
+- https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/index.html[OAuth 2.0 Resource Server]
