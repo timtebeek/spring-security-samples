@@ -49,7 +49,8 @@ image:docs/signin.png[alt='Please sign in']
 If we try to open the same endpoint from the commandline we immediately get a `HTTP/1.1 401` response.
 
 We turn to the application logs to find out what happened in our application.
-As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
+As it turns out, there's a curious new logline from
+https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
 [source,text]
 ----
 INFO --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
