@@ -83,4 +83,4 @@ Our `AuditSecurityConfigurationTest` ties together all elements to ensure audit 
 There are additional tests that verify the current behavior when an `Author` can not be found.
 
 == References
-- https://docs.spring.io/spring-data/jpa/docs/2.2.x/reference/html/#auditing[Spring Data JPA Reference on Auditing]
+- https://docs.spring.io/spring-data/jpa/docs/2.7.x/reference/html/#auditing[Spring Data JPA Reference on Auditing]

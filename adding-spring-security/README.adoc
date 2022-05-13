@@ -18,13 +18,13 @@ Initially this application was only used from within the HR department, who rece
 
 Now we want to open up this application to all employees, so they can file their leave requests themselves.
 Anyone from the HR department can then either approve or deny a leave request.
-Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-samples/tree/master/adding-spring-security/leaveapp-initial[leaveapp-initial].
+Simple enough! For a version of our application without any security in place have a look at link:leaveapp-initial[leaveapp-initial].
 
 == Which dependency to add?
 The first step in adding security to our application is picking the right dependency to add to our project.
 However, even figuring out which dependency to add can be difficult these days!
-Looking at https://start.spring.io/#!type=maven-project&&jvmVersion=11&dependencies=security,oauth2-client,cloud-security,cloud-oauth2,oauth2-resource-server[start.spring.io]
-we can see there are already 5 different dependencies related to Spring Security and/or OAuth2.
+Looking at https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.6.7&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=security,oauth2-client,oauth2-resource-server,okta,data-ldap,azure-active-directory[start.spring.io]
+we can see there are already six different dependencies related to Spring Security and/or OAuth2.
 In part this is down to a https://spring.io/blog/2019/11/14/spring-security-oauth-2-0-roadmap-update[restructuring of OAuth2 support],
 with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
 
@@ -49,7 +49,8 @@ image:docs/signin.png[alt='Please sign in']
 If we try to open the same endpoint from the commandline we immediately get a `HTTP/1.1 401` response.
 
 We turn to the application logs to find out what happened in our application.
-As it turns out, there's a curious new logline from https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
+As it turns out, there's a curious new logline from
+https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
 [source,text]
 ----
 INFO --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
@@ -62,7 +63,7 @@ At the very least the log line and dialog serve as a reminder to configure exact
 
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
-https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/oauth2.html#oauth2resourceserver[As indicated in the documentation], configuration takes the form of:
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/jwt.html[As indicated in the documentation], configuration takes the form of:
 
 .application.yml
 [source,yaml]
@@ -79,7 +80,8 @@ During development we will either link:keycloak/README.adoc[use Keycloak] or lin
 
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
-The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by https://github.com/spring-projects/spring-boot/blob/2.2.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
+The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by
+https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
 Unless you provide your own `WebSecurityConfigurerAdapter`, this sets up your application to required a JSON Web Token for each request.
 
 When we now call any application endpoint we consistently get a `401 Unauthorized` response, since our requests lack an `Authorization` header with  `Bearer` JSON Web Token.
@@ -121,11 +123,12 @@ Running the tests we see `GET` requests now get a `401 Unauthorized` response, w
 DEBUG --- [main] o.s.security.web.csrf.CsrfFilter :
   Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
 ----
-By default Spring Security adds https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#servlet-csrf[Cross Site Request Forgery] protection for `POST` requests.
+By default Spring Security adds https://docs.spring.io/spring-security/reference/5.6.3/servlet/exploits/csrf.html[Cross Site Request Forgery] protection for `POST` requests.
 This protects our resource server from malicious requests; and we choose not the disable this just yet.
 Because of this, we have to add `csrf` tokens to our POST requests, which is normally provided through a `CsrfRequestPostProcessor` from `spring-security-test`.
 
-We want to authenticate for our web requests, which we can achieve by adding the https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/test.html[`spring-security-test`] library to our test class path.
+We want to authenticate for our web requests, which we can achieve by adding the
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/test/mockmvc/oauth2.html#testing-jwt[`spring-security-test`] library to our test class path.
 This library provides us with `SecurityMockMvcRequestPostProcessors#jwt()`, among others, which we add to our test methods to have them pass a valid JWT along to each request.
 [source,java]
 ----
@@ -140,7 +143,8 @@ If you now rerun the tests, you'll find all tests within `LeaveRequestController
 Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requires Keycloak to start the application context.
 While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
-We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, https://docs.spring.io/spring-security/site/docs/5.2.x/reference/htmlsingle/#literal-authentication-literal-literal-requestpostprocessor-literal[as alluded to in the documentation].
+We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, 
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/test/mockmvc/oauth2.html#testing-jwt[as alluded to in the documentation].
 With the MockBean in place we can see the test application context now starts up again, even when the OpenID Connect provider is unavailable.
 
 At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
@@ -168,7 +172,8 @@ For instance:
 
 === Configuring method security
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
-We'll add a variety of security annotation and expressions, all of which are documented extensively in https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html/authorization.html[the Authorization chapter of Spring Security].
+We'll add a variety of security annotation and expressions, all of which are documented extensively in 
+https://docs.spring.io/spring-security/reference/5.6.3/servlet/authorization/index.html[the Authorization chapter of Spring Security].
 The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
 [source,java]
@@ -228,5 +233,5 @@ These details will differ per OpenID Connect provider, along with any configured
 
 == Conclusion
 We have now added Spring Security to our application, to allow any user to authenticate, while only granting some users special privileges.
-The full source code with Spring Security added can be found in https://github.com/timtebeek/spring-security-workshop/tree/master/adding-spring-security/leaveapp-complete[leaveapp-complete].
+The full source code with Spring Security added can be found in link:leaveapp-complete[leaveapp-complete].
 This application could of course be expanded to include further protection against exploits, auditing and even more security aspects, but we leave those for another time.
