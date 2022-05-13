@@ -151,15 +151,13 @@ At this point we see the same failure modes as we saw previously: `GET` requests
 We add the same fixes as previously applied to `LeaveRequestControllerWebMvcTest` to make all tests pass again.
 
 ==== @SpringBootTest with WebEnvironment.RANDOM_PORT
-Our `LeaveRequestControllerSpringBootWebEnvRandomPortTest` puts as in quite a difficult spot;
-There's no clear route to easy test support for this approach, and we have to wonder if this is the best way to write application tests at all.
-But, since we're not giving up easily, there's still a way to get things working, even if it shows you maybe shouldn't.
-We start out by manipulating Keycloak to give us a JSON Web Token with a ridiculously long lifespan; It's the same token as you've seen before above.
-Next, we add `spring-cloud-contract-wiremock` to our test class path, and wire it up to serve our recorded Keycloak OpenID Connect mappings during our tests.
-Finally, we add a `RestTemplateCustomizer` which appends the JWT to any test requests.
+Our `LeaveRequestControllerSpringBootWebEnvRandomPortTest` is one of the more challenging ones to get working.
+As we are bootstrapping an entire application context, by default a live OpenID Connect provider would be expected.
 
-This approach might not be feasible for your OpenID Connect provider, it might not scale as you need different roles and tokens, and in general seems like a bad idea.
-There's little in terms of alternatives though, save for further test application context hacks which defeat your testing of token handling.
+It's neither easy nor desirable to host or mock a OIDC provider, so instead we provide a `@MockBean JwtDecoder`.
+That disables the OIDC provider bootstrap, but in turn we have to mock the `JwtDecoder.decode(String)` response.
+Our returned Jwt should match the token we get from our OIDC provider, or else we will have runtime issues.
+This approach allows us to create tokens with any desired role, but creating the mock responses takes quite some effort.
 
 == Roles and authorizations
 Our application now requires a JWT with every request, and decodes that into an Authentication.
@@ -221,9 +219,6 @@ Similar to `LeaveRequestServiceTest`, we also need to define the same mock user 
 ==== @SpringBootTest with WebEnvironment.RANDOM_PORT
 Proving ever more troublesome, we have to make some more substantial changes to `LeaveRequestControllerSpringBootWebEnvRandomPortTest`.
 We need a second token for a user with the `HR` role to be able to test the approve/deny flows.
-So we again manipulate Keycloak to give us another token with the specified role, and pass that in the relevant tests.
-We can no longer use the `RestTemplateCustomizer` from before, and instead have to use `TestRestTemplate#exchange()` within each test.
-With our tests updated and rerun, we find our token handling to be incomplete!
 
 By default our tokens are decoded to have a UUID username, and the Keycloak realm access roles are not mapped at all yet.
 None of the other test approaches surfaced this omission, so there's some value to these tests after all.
