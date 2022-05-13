@@ -37,6 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
+	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {};
+
 	@Autowired
 	private LeaveRequestRepository repository;
 
@@ -50,9 +52,6 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 	void beforeEach() {
 		repository.clear();
 	}
-
-	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {
-	};
 
 	@Nested
 	class AuthorizeUser {
