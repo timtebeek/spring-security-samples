@@ -18,7 +18,7 @@ Initially this application was only used from within the HR department, who rece
 
 Now we want to open up this application to all employees, so they can file their leave requests themselves.
 Anyone from the HR department can then either approve or deny a leave request.
-Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-samples/tree/master/adding-spring-security/leaveapp-initial[leaveapp-initial].
+Simple enough! For a version of our application without any security in place have a look at link:leaveapp-initial[leaveapp-initial].
 
 == Which dependency to add?
 The first step in adding security to our application is picking the right dependency to add to our project.
@@ -233,5 +233,5 @@ These details will differ per OpenID Connect provider, along with any configured
 
 == Conclusion
 We have now added Spring Security to our application, to allow any user to authenticate, while only granting some users special privileges.
-The full source code with Spring Security added can be found in https://github.com/timtebeek/spring-security-workshop/tree/master/adding-spring-security/leaveapp-complete[leaveapp-complete].
+The full source code with Spring Security added can be found in link:leaveapp-complete[leaveapp-complete].
 This application could of course be expanded to include further protection against exploits, auditing and even more security aspects, but we leave those for another time.
