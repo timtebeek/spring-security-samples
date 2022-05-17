@@ -92,7 +92,7 @@ We specifically match path prefixes to our services, which align with the `serve
 The OpenID connect client configuration requires the configured provider URL to be available when the application starts.
 To get around this in our tests we've link:/spring-cloud-gateway-oidc-tokenrelay/travel-spring-cloud-gateway/src/test/resources/README.adoc[recorded the Keycloak response with WireMock], and replay that when our tests run.
 Once the test application context is started, we want to make an authenticated request to our gateway.
-For this, we use the new https://docs.spring.io/spring-security/reference/5.6.3/reactive/test/web/oauth2.html#webflux-testing-oidc-login[`SecurityMockServerConfigurers#mockOidcLogin()`] Mutator introduced in Spring Security 5.0.
+For this, we use the new https://docs.spring.io/spring-security/reference/5.6.4/reactive/test/web/oauth2.html#webflux-testing-oidc-login[`SecurityMockServerConfigurers#mockOidcLogin()`] Mutator introduced in Spring Security 5.0.
 Using this we can set any properties we might need; to mimic what our gateway normally handles for us.
 
 === Resource servers
@@ -155,7 +155,7 @@ class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAut
 }
 ----
 
-Thirdly we again https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping[extract the `preferred_name` as authentication name], to match up with our gateway.
+Thirdly we again https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping[extract the `preferred_name` as authentication name], to match up with our gateway.
 [source,java]
 ----
 @Bean
@@ -208,7 +208,7 @@ spring:
 ----
 
 ==== Testing
-The Hotels and Flights service both https://docs.spring.io/spring-security/reference/5.6.3/servlet/test/mockmvc/oauth2.html#testing-jwt[swap out the `JwtDecoder` bean for a mock].
+The Hotels and Flights service both https://docs.spring.io/spring-security/reference/5.6.4/servlet/test/mockmvc/oauth2.html#testing-jwt[swap out the `JwtDecoder` bean for a mock].
 They use the new `jwt() RequestPostProcessor` introduced in Spring Security 5.2 to easily change JWT characteristics.
 
 == Conclusion
@@ -235,5 +235,5 @@ Going forward we suggest you:
 
 == References
 - https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway]
-- https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/login/core.html[OAuth 2.0 Login]
-- https://docs.spring.io/spring-security/reference/5.6.3/servlet/oauth2/resource-server/index.html[OAuth 2.0 Resource Server]
+- https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/login/core.html[OAuth 2.0 Login]
+- https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/index.html[OAuth 2.0 Resource Server]
