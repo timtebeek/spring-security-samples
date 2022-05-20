@@ -114,7 +114,7 @@ Firstly, we need to the basics of security; ensuring tokens are decoded and chec
 ----
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

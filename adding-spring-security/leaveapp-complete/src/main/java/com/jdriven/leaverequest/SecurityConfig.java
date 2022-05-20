@@ -12,24 +12,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @ConditionalOnMissingBean(JwtDecoder.class)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+@EnableWebSecurity
+public class SecurityConfig {
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			// Require authentication for all requests
-			.authorizeRequests()
+				// Require authentication for all requests
+				.authorizeRequests()
 				.anyRequest().authenticated()
 				.and()
-			// Validate tokens through configured OpenID Provider
-			.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+				// Validate tokens through configured OpenID Provider
+				.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+		return http.build();
 	}
 
 	private static JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -49,20 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 
+// this part configures the extraction of custom roles from the JWT
 // As per: https://docs.spring.io/spring-security/reference/5.7.1/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
-class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
-
-	private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
-
-	@Override
-	public Map<String, Object> convert(Map<String, Object> claims) {
-		Map<String, Object> convertedClaims = this.delegate.convert(claims);
-		String username = (String) convertedClaims.get("preferred_username");
-		convertedClaims.put("sub", username);
-		return convertedClaims;
-	}
-
-}
 
 class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
@@ -74,6 +65,23 @@ class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAut
 				.map(roleName -> "ROLE_" + roleName)
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
+	}
+
+}
+
+//this part configures the extraction of the username from the JWT
+
+// As per: https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
+class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
+
+	private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
+
+	@Override
+	public Map<String, Object> convert(Map<String, Object> claims) {
+		Map<String, Object> convertedClaims = this.delegate.convert(claims);
+		String username = (String) convertedClaims.get("preferred_username");
+		convertedClaims.put("sub", username);
+		return convertedClaims;
 	}
 
 }

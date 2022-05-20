@@ -12,24 +12,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// Validate tokens through configured OpenID Provider
 		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 		// Require authentication for all requests
 		http.authorizeRequests().anyRequest().authenticated();
 		// Allow showing pages within a frame
 		http.headers().frameOptions().sameOrigin();
+		return http.build();
 	}
 
 	private JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -40,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
- JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
+	JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
 		String issuerUri = properties.getJwt().getIssuerUri();
 		NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);
 		// Use preferred_username from claims as authentication name, instead of UUID subject
