@@ -24,7 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				// Require authentication for all requests
 				.authorizeRequests()
@@ -52,20 +52,7 @@ public class SecurityConfig {
 	}
 }
 
-// As per: https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
-class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
-
-	private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
-
-	@Override
-	public Map<String, Object> convert(Map<String, Object> claims) {
-		Map<String, Object> convertedClaims = this.delegate.convert(claims);
-		String username = (String) convertedClaims.get("preferred_username");
-		convertedClaims.put("sub", username);
-		return convertedClaims;
-	}
-
-}
+// this part configures the extraction of custom roles from the JWT
 
 class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
@@ -77,6 +64,23 @@ class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAut
 				.map(roleName -> "ROLE_" + roleName)
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
+	}
+
+}
+
+//this part configures the extraction of the username from the JWT
+
+// As per: https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
+class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
+
+	private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
+
+	@Override
+	public Map<String, Object> convert(Map<String, Object> claims) {
+		Map<String, Object> convertedClaims = this.delegate.convert(claims);
+		String username = (String) convertedClaims.get("preferred_username");
+		convertedClaims.put("sub", username);
+		return convertedClaims;
 	}
 
 }
