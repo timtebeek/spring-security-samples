@@ -53,6 +53,7 @@ public class SecurityConfig {
 }
 
 // this part configures the extraction of custom roles from the JWT
+// As per: https://docs.spring.io/spring-security/reference/5.7.1/servlet/oauth2/resource-server/jwt.html#oauth2resourceserver-jwt-claimsetmapping
 
 class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 

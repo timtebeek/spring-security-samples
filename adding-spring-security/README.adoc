@@ -63,7 +63,7 @@ At the very least the log line and dialog serve as a reminder to configure exact
 
 === OAuth2 Resource server configuration
 Since we wish to configure our application to function as an OAuth2 resource server, we can provide the required configuration to make the generated security password go away.
-https://docs.spring.io/spring-security/reference/5.6.4/servlet/oauth2/resource-server/jwt.html[As indicated in the documentation], configuration takes the form of:
+https://docs.spring.io/spring-security/reference/5.7.1/servlet/oauth2/resource-server/jwt.html[As indicated in the documentation], configuration takes the form of:
 
 .application.yml
 [source,yaml]
@@ -123,12 +123,12 @@ Running the tests we see `GET` requests now get a `401 Unauthorized` response, w
 DEBUG --- [main] o.s.security.web.csrf.CsrfFilter :
   Invalid CSRF token found for http://localhost/approve/4570ec01-9640-4873-a75b-59a8b4983d9e
 ----
-By default Spring Security adds https://docs.spring.io/spring-security/reference/5.6.4/servlet/exploits/csrf.html[Cross Site Request Forgery] protection for `POST` requests.
+By default Spring Security adds https://docs.spring.io/spring-security/reference/5.7.1/servlet/exploits/csrf.html[Cross Site Request Forgery] protection for `POST` requests.
 This protects our resource server from malicious requests; and we choose not the disable this just yet.
 Because of this, we have to add `csrf` tokens to our POST requests, which is normally provided through a `CsrfRequestPostProcessor` from `spring-security-test`.
 
 We want to authenticate for our web requests, which we can achieve by adding the
-https://docs.spring.io/spring-security/reference/5.6.4/servlet/test/mockmvc/oauth2.html#testing-jwt[`spring-security-test`] library to our test class path.
+https://docs.spring.io/spring-security/reference/5.7.1/servlet/test/mockmvc/oauth2.html#testing-jwt[`spring-security-test`] library to our test class path.
 This library provides us with `SecurityMockMvcRequestPostProcessors#jwt()`, among others, which we add to our test methods to have them pass a valid JWT along to each request.
 [source,java]
 ----
@@ -144,7 +144,7 @@ Next up is our `LeaveRequestControllerSpringBootWebEnvMockTest`, which now requi
 While locally this might be manageable, for CI/CD environments and general test stability it's far from ideal.
 Therefore we would like to make this test pass without the need for the configured `issuer-uri` to be available.
 We can achieve this fairly easily by providing a `@MockBean JwtDecoder`, which bypasses the call to our `issuer-uri`, 
-https://docs.spring.io/spring-security/reference/5.6.4/servlet/test/mockmvc/oauth2.html#testing-jwt[as alluded to in the documentation].
+https://docs.spring.io/spring-security/reference/5.7.1/servlet/test/mockmvc/oauth2.html#testing-jwt[as alluded to in the documentation].
 With the MockBean in place we can see the test application context now starts up again, even when the OpenID Connect provider is unavailable.
 
 At this point we see the same failure modes as we saw previously: `GET` requests get a `401` response, wehereas `POST` requests get a `403` response.
@@ -171,7 +171,7 @@ For instance:
 === Configuring method security
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
 We'll add a variety of security annotation and expressions, all of which are documented extensively in 
-https://docs.spring.io/spring-security/reference/5.6.4/servlet/authorization/index.html[the Authorization chapter of Spring Security].
+https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/index.html[the Authorization chapter of Spring Security].
 The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
 [source,java]
