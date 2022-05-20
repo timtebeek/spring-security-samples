@@ -12,24 +12,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @ConditionalOnMissingBean(JwtDecoder.class)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+public class SecurityConfig {
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			// Require authentication for all requests
-			.authorizeRequests()
+				// Require authentication for all requests
+				.authorizeRequests()
 				.anyRequest().authenticated()
 				.and()
-			// Validate tokens through configured OpenID Provider
-			.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+				// Validate tokens through configured OpenID Provider
+				.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+		return http.build();
 	}
 
 	private static JwtAuthenticationConverter jwtAuthenticationConverter() {

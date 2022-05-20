@@ -50,7 +50,7 @@ If we try to open the same endpoint from the commandline we immediately get a `H
 
 We turn to the application logs to find out what happened in our application.
 As it turns out, there's a curious new logline from
-https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
+https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.java[`UserDetailsServiceAutoConfiguration`]:
 [source,text]
 ----
 INFO --- [main] .s.s.UserDetailsServiceAutoConfiguration : 
@@ -81,8 +81,8 @@ During development we will either link:keycloak/README.adoc[use Keycloak] or lin
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
 The `UserDetailsServiceAutoConfiguration` from before has instead been replaced by
-https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
-Unless you provide your own `WebSecurityConfigurerAdapter`, this sets up your application to required a JSON Web Token for each request.
+https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration.java[`OAuth2ResourceServerJwtConfiguration`], which has provided us with a `JwtDecoder` to handle incoming tokens.
+Unless you provide your own `SecurityFilterChain`, this sets up your application to require a JSON Web Token for each request.
 
 When we now call any application endpoint we consistently get a `401 Unauthorized` response, since our requests lack an `Authorization` header with  `Bearer` JSON Web Token.
 To solve this, we have to actually pass a Bearer token along with our requests.
