@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Data
-@Entity
+@Entity(name = "myuser")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class User extends AbstractPersistable<Long> {
