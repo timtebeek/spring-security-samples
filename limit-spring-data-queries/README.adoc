@@ -76,5 +76,5 @@ Our `PreferencesRepositoryIT` tests use mock users _Alice_ and _Bob_, with a mal
 You can see the correct users are granted access to store and retrieve records, whereas _Eve_ will get an `AccessDeniedException` handled separately.
 
 == References
-- https://docs.spring.io/spring-security/reference/5.6.4/servlet/authorization/expression-based.html#_method_security_expressions[Method Security Expressions]
-- https://docs.spring.io/spring-security/reference/5.6.4/servlet/integrations/data.html[Spring Data & Spring Security Configuration]
+- https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/expression-based.html#_method_security_expressions[Method Security Expressions]
+- https://docs.spring.io/spring-security/reference/5.7.1/servlet/integrations/data.html[Spring Data & Spring Security Configuration]

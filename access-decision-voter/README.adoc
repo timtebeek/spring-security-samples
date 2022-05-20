@@ -82,9 +82,9 @@ You can see access to the spreadsheet abides by the rules stored at the start of
 
 == Alternatives
 For highly customizable access storage you might adopt 
-https://docs.spring.io/spring-security/reference/5.6.4/servlet/authorization/acls.html[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
+https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/acls.html[Spring Security’s ACL services], as shipped in `spring-security-acl-xxx.jar`.
 This provides a very powerful method of encoding, storing and retrieving access permissions.
 
 == References
-- https://docs.spring.io/spring-security/reference/5.6.4/servlet/authorization/index.html[Authorization]
-- https://docs.spring.io/spring-security/reference/5.6.4/servlet/authorization/method-security.html[Method Security]
+- https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/index.html[Authorization]
+- https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/method-security.html[Method Security]
