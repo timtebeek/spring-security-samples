@@ -5,7 +5,6 @@ import java.util.Collections;
 import com.jdriven.model.Spreadsheet;
 import com.jdriven.service.SpreadsheetService;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class CustomPermissionEvaluatorIT {
@@ -70,13 +71,13 @@ class CustomPermissionEvaluatorIT {
 	@WithMockUser("alice")
 	void testAliceNotAllowedToReadAnotherSpreadsheet() {
 		Spreadsheet anotherSpreadsheet = new Spreadsheet(456L, "another spreadsheet");
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
 	}
 
 	@Test
 	@WithMockUser("alice")
 	void testAliceNotAllowedToReadAnotherSpreadsheetById() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.readById(456L));
+		assertThrows(AccessDeniedException.class, () -> service.readById(456L));
 	}
 
 	@Test
@@ -94,30 +95,30 @@ class CustomPermissionEvaluatorIT {
 	@Test
 	@WithMockUser("bob")
 	void testBobNotAllowedToWriteSpreadsheet() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.write(spreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.write(spreadsheet));
 	}
 
 	@Test
 	@WithMockUser("bob")
 	void testBobNotAllowedToPrintSpreadsheet() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.print(spreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.print(spreadsheet));
 	}
 
 	@Test
 	@WithMockUser("bob")
 	void testBobNotAllowedToWriteSpreadsheetById() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.writeById(spreadsheet.getId()));
+		assertThrows(AccessDeniedException.class, () -> service.writeById(spreadsheet.getId()));
 	}
 
 	@Test
 	@WithMockUser("eve")
 	void testEveNotAllowedToReadSpreadsheet() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(spreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.read(spreadsheet));
 	}
 
 	@Test
 	@WithMockUser("eve")
 	void testEveNotAllowedToReadSpreadsheetById() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.readById(spreadsheet.getId()));
+		assertThrows(AccessDeniedException.class, () -> service.readById(spreadsheet.getId()));
 	}
 }

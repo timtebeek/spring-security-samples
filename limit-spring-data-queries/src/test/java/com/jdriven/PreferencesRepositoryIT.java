@@ -6,7 +6,6 @@ import com.jdriven.repo.Preferences;
 import com.jdriven.repo.PreferencesRepository;
 import com.jdriven.repo.User;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestEntityManager
@@ -87,7 +87,7 @@ class PreferencesRepositoryIT {
 		Preferences lightpreferences = new Preferences();
 		lightpreferences.setUser(userAlice);
 		lightpreferences.setDarkMode(true);
-		Assertions.assertThrows(AccessDeniedException.class, () -> preferencesRepo.save(lightpreferences));
+		assertThrows(AccessDeniedException.class, () -> preferencesRepo.save(lightpreferences));
 	}
 
 	@Test
@@ -103,6 +103,6 @@ class PreferencesRepositoryIT {
 	@WithMockUser("eve")
 	void testEveNotAllowedToFindPreferencesById() {
 		// No results as Eve does not have access to Bobs preferences
-		Assertions.assertThrows(AccessDeniedException.class, () -> preferencesRepo.findById(preferencesBob.getId()));
+		assertThrows(AccessDeniedException.class, () -> preferencesRepo.findById(preferencesBob.getId()));
 	}
 }

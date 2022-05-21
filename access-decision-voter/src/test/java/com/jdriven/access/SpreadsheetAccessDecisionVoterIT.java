@@ -5,7 +5,6 @@ import java.util.Collections;
 import com.jdriven.model.Spreadsheet;
 import com.jdriven.service.SpreadsheetService;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class SpreadsheetAccessDecisionVoterIT {
@@ -44,7 +45,7 @@ class SpreadsheetAccessDecisionVoterIT {
 	@WithMockUser("alice")
 	void testAliceNotAllowedToReadAnotherSpreadsheet() {
 		Spreadsheet anotherSpreadsheet = new Spreadsheet(345L, "another spreadsheet");
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.read(anotherSpreadsheet));
 	}
 
 	@Test
@@ -56,7 +57,7 @@ class SpreadsheetAccessDecisionVoterIT {
 	@Test
 	@WithMockUser("eve")
 	void testEveNotAllowedToReadSpreadsheet() {
-		Assertions.assertThrows(AccessDeniedException.class, () -> service.read(spreadsheet));
+		assertThrows(AccessDeniedException.class, () -> service.read(spreadsheet));
 	}
 
 }
