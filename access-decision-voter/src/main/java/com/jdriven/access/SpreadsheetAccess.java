@@ -1,8 +1,10 @@
 package com.jdriven.access;
 
 import com.jdriven.model.Spreadsheet;
-import lombok.Value;
+
 import org.springframework.security.core.userdetails.User;
+
+import lombok.Value;
 
 @Value
 public class SpreadsheetAccess {

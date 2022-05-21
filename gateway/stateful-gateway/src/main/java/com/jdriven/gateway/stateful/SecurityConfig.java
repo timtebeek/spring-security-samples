@@ -26,15 +26,16 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	WebClient tokenAugmentingWebClient(final ReactiveClientRegistrationRepository clientRegistrationRepository,
-									   final ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
+	WebClient tokenAugmentingWebClient(
+			final ReactiveClientRegistrationRepository clientRegistrationRepository,
+			final ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
 		return WebClient.builder()
 			.filter(new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository, authorizedClientRepository))
 			.build();
 	}
 
 	@Bean
- SecurityWebFilterChain securityWebFilterChain() {
+	SecurityWebFilterChain securityWebFilterChain() {
 		// the matcher for all paths that need to be secured (require a logged-in user)
 		final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(API_MATCHER_PATH);
 

@@ -3,10 +3,11 @@ package com.jdriven.repo;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Data
 @Entity

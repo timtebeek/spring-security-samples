@@ -3,8 +3,9 @@ package com.jdriven.permission;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.Value;
 import org.springframework.stereotype.Repository;
+
+import lombok.Value;
 
 @Repository
 @Value

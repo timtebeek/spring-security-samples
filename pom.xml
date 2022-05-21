@@ -26,20 +26,6 @@
 		<module>permission-evaluator</module>
 		<module>spring-cloud-gateway-oidc-tokenrelay</module>
 	</modules>
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<plugins>
 			<plugin>
@@ -63,6 +49,26 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.22.5</version>
+				<!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
+				<configuration>
+					<java>
+						<endWithNewline />
+						<importOrder>
+							<order>java,com,org,,\#</order>
+						</importOrder>
+						<indent>
+							<tabs>true</tabs>
+							<spacesPerTab>4</spacesPerTab>
+						</indent>
+						<removeUnusedImports />
+						<trimTrailingWhitespace />
+					</java>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

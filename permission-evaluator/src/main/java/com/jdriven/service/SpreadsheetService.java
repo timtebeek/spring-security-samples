@@ -2,9 +2,11 @@ package com.jdriven.service;
 
 import com.jdriven.model.Spreadsheet;
 import com.jdriven.permission.SpreadsheetPrintAccess;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j

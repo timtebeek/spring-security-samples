@@ -1,5 +1,8 @@
 package com.jdriven.gateway.stateful;
 
+import java.util.Map;
+import java.util.function.Consumer;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +18,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
-import java.util.Map;
-import java.util.function.Consumer;
+import reactor.core.publisher.Mono;
 
 import static org.springframework.web.reactive.function.BodyExtractors.toDataBuffers;
 import static org.springframework.web.reactive.function.BodyInserters.fromDataBuffers;
@@ -44,12 +45,12 @@ public class ProxyConfig {
 	}
 
 	@Bean
- RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
+	RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
 		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
 	}
 
 	@Bean
- RouterFunction<ServerResponse> proxy(WebClient webClient) {
+	RouterFunction<ServerResponse> proxy(WebClient webClient) {
 		return route(path(API_PREFIX + SERVICE_PARAM + CATCH_ALL_SUFFIX), request -> authorizedClient(request)
 				.map(attr -> webClient.method(request.method())
 						.uri(toBackendUri(request))

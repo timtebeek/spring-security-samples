@@ -1,10 +1,9 @@
 package com.jdriven;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.jdriven.repo.Author;
 import com.jdriven.repo.Blogpost;
 import com.jdriven.repo.BlogpostRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureTestEntityManager
