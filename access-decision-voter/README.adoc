@@ -66,7 +66,7 @@ Firstly, we need to activate the `@Secured` annotations through `@EnableGlobalMe
 
 Secondly, we need to add our `SpreadsheetAccessDecisionVoter` to the list of decision voters considered by the `AccessDecisionManager`.
 For this we extend `GlobalMethodSecurityConfiguration` to override `AccessDecisionManager accessDecisionManager()`.
-We call `super.accessDecisionManager()` to get the default `AffirmativeBased` access decision manager, and merely add our own voter at the end.
+We call `super.accessDecisionManager()` to get the default `AffirmativeBased` access decision manager, and merely link:src/main/java/com/jdriven/AccessDecisionConfiguration.java#L21[add our own voter at the end].
 
 Should you have a need to secure more than one domain object type, it's easy enough to add more voters to the list.
 
