@@ -31,7 +31,7 @@ Voters can choose to *GRANT* or *DENY* a particular method invocation, based on 
 If a voter can not decide on a particular method invocation, it can choose to *ABSTAIN* to leave the decision up to further voters.
 By default you'll get the `AffirmativeBased` access decision manager, which allows a method invocation _if just one of the voters_ votes to *GRANT* access, regardless of any votes to *DENY* access.
 
-Four our purposes we want a custom voter that validates user access to a spreadsheet against the stored access records.
+For our purposes we want a custom voter that validates user access to a spreadsheet against the stored access records.
 We do so by extending `AbstractAclVoter`, which for a configured processed domain object class and method invocation can look up the argument domain object instance.
 We'll implement the `vote` method, which is passed the authenticated user, the secured `MethodInvocation` and a collection of `ConfigAttributes`.
 [source,java]
