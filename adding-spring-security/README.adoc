@@ -4,7 +4,7 @@ Adding Spring Security to an existing application can be quite a daunting prospe
 Merely adding the required dependencies to your project sets off a chain of events which can break your application and tests.
 
 Maybe you're suddenly shown a login prompt which expects a generated password logged on startup. +
-Maybe your tests now get the dreaded `401 Unauthorized`, or a subsequently a `403 Forbidden`. +
+Maybe your tests now get the dreaded `401 Unauthorized`, or subsequently a `403 Forbidden`. +
 Maybe you get a `ClassCastException` when trying to use your `Authentication#getPrincipal()`. +
 Either way, this post is here to help!
 
