@@ -98,7 +98,7 @@ eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpu
 # Save the token in an environment variable
 $ export token=eyJhbGc...
 # Create a leave request for a specific user and time window
-$ http POST ':8080/request/tim?from=2020-03-21&to=2020-04-11' "Authorization: Bearer ${token}"
+$ http POST ':8080/request/alice?from=2022-08-21&to=2022-09-11' "Authorization: Bearer ${token}"
 # Retrieve all leave requests
 $ http :8080/view/all "Authorization: Bearer ${token}"
 ----
