@@ -18,7 +18,7 @@ Initially this application was only used from within the HR department, who rece
 
 Now we want to open up this application to all employees, so they can file their leave requests themselves.
 Anyone from the HR department can then either approve or deny a leave request.
-Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-workshop/tree/master/adding-spring-security/leaveapp-initial[leaveapp-initial].
+Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/leaveapp-initial[leaveapp-initial].
 
 == Which dependency to add?
 The first step in adding security to our application is picking the right dependency to add to our project.
