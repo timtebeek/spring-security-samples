@@ -7,15 +7,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.jdriven.leaverequest.LeaveRequest.Status;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import static org.springframework.http.ResponseEntity.accepted;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -23,7 +21,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
-public class LeaveRequestController {
+class LeaveRequestController {
 
 	private final LeaveRequestService service;
 
@@ -54,8 +52,8 @@ public class LeaveRequestController {
 		return accepted().body(new LeaveRequestDTO(denied.get()));
 	}
 
-	@GetMapping("/view/id/{id}")
-	public ResponseEntity<LeaveRequestDTO> viewId(@PathVariable UUID id) {
+	@GetMapping("/view/request/{id}")
+	public ResponseEntity<LeaveRequestDTO> ViewRequest(@PathVariable UUID id) {
 		Optional<LeaveRequest> retrieved = service.retrieve(id);
 		if (retrieved.isEmpty()) {
 			return noContent().build();

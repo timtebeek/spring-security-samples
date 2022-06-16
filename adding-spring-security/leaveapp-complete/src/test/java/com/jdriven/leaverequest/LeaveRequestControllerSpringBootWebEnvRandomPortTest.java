@@ -82,10 +82,10 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		}
 
 		@Test
-		void testViewId() throws Exception {
+		void testViewRequest() throws Exception {
 			LeaveRequest saved = repository.save(new LeaveRequest("alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
-			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/id/{id}", GET, httpEntity,
+			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, saved.getId());
 			assertThat(response.getStatusCode()).isEqualByComparingTo(OK);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
@@ -153,9 +153,9 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		}
 
 		@Test
-		void testViewIdMissing() throws Exception {
+		void testViewRequestMissing() throws Exception {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
-			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/id/{id}", GET, httpEntity,
+			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, UUID.randomUUID());
 			assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
 		}

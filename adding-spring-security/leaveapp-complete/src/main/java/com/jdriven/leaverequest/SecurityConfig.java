@@ -22,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @ConditionalOnMissingBean(JwtDecoder.class)
 @EnableWebSecurity
-public class SecurityConfig {
+class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http

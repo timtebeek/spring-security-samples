@@ -62,10 +62,10 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 		}
 
 		@Test
-		void testViewId() throws Exception {
+		void testViewRequest() throws Exception {
 			LeaveRequest saved = repository
 					.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED));
-			mockmvc.perform(get("/view/id/{id}", saved.getId())
+			mockmvc.perform(get("/view/request/{id}", saved.getId())
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -120,8 +120,8 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 		}
 
 		@Test
-		void testViewIdMissing() throws Exception {
-			mockmvc.perform(get("/view/id/{id}", UUID.randomUUID())
+		void testViewRequestMissing() throws Exception {
+			mockmvc.perform(get("/view/request/{id}", UUID.randomUUID())
 					// Alice would get a AccessDeniedException on missing returnObject
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isNoContent());

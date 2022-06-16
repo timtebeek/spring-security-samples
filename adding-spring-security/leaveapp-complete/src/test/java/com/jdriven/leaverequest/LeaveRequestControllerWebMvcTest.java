@@ -57,11 +57,11 @@ class LeaveRequestControllerWebMvcTest {
 		}
 
 		@Test
-		void testViewId() throws Exception {
+		void testViewRequest() throws Exception {
 			when(service.retrieve(any()))
 					.thenReturn(
 							Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.APPROVED)));
-			mockmvc.perform(get("/view/id/{id}", UUID.randomUUID())
+			mockmvc.perform(get("/view/request/{id}", UUID.randomUUID())
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -120,8 +120,8 @@ class LeaveRequestControllerWebMvcTest {
 		}
 
 		@Test
-		void testViewIdMissing() throws Exception {
-			mockmvc.perform(get("/view/id/{id}", UUID.randomUUID())
+		void testViewRequestMissing() throws Exception {
+			mockmvc.perform(get("/view/request/{id}", UUID.randomUUID())
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isNoContent());
 		}
