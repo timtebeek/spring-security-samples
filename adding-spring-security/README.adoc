@@ -25,7 +25,7 @@ The first step in adding security to our application is picking the right depend
 However, even figuring out which dependency to add can be difficult these days!
 Looking at https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.6.7&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=security,oauth2-client,oauth2-resource-server,okta,data-ldap,azure-active-directory[start.spring.io]
 we can see there are already six different dependencies related to Spring Security and/or OAuth2.
-In part this is down to a https://spring.io/blog/2019/11/14/spring-security-oauth-2-0-roadmap-update[restructuring of OAuth2 support],
+In part this is down to a https://spring.io/blog/2022/11/14/spring-security-oauth-2-0-roadmap-update[restructuring of OAuth2 support],
 with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
 
 In short we now advise against using the Spring Cloud Starter dependencies, and push towards using Spring Security support for OAuth2.
@@ -200,14 +200,14 @@ We use the same `@WithMockUser` as we've seen earlier, with arguments added to m
 @Test
 @WithMockUser(username = "Alice")
 void testRequest() {
-  LeaveRequest leaveRequest = service.request("Alice", of(2019, 11, 30), of(2019, 12, 03));
+  LeaveRequest leaveRequest = service.request("Alice", of(2022, 11, 30), of(2022, 12, 03));
   verify(repository).save(leaveRequest);
 }
 
 @Test
 @WithMockUser(roles = "HR")
 void testApprove() {
-  LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 03), PENDING));
+  LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 03), PENDING));
   Optional<LeaveRequest> approved = service.approve(saved.getId());
   [...]
 }
