@@ -233,6 +233,8 @@ Going forward we suggest you:
  * `org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure`
 - replace these with `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, as outlined above.
 
+As of June 1st 2022 the https://spring.io/blog/2022/06/01/spring-security-oauth-reaches-end-of-life[Spring Security OAuth project has reached End-of-Life].
+
 == References
 - https://cloud.spring.io/spring-cloud-gateway/reference/html/[Spring Cloud Gateway]
 - https://docs.spring.io/spring-security/reference/5.7.1/servlet/oauth2/login/core.html[OAuth 2.0 Login]
