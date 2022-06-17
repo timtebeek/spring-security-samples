@@ -76,7 +76,9 @@ spring:
           issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
 ----
 Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
-During development we will either link:keycloak/README.adoc[use Keycloak] or link:wiremock/README.adoc[WireMock] to serve the configured `issuer-uri` endpoint.
+During development we will either
+https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/keycloak/[use Keycloak] or 
+https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/wiremock/[WireMock] to serve the configured `issuer-uri` endpoint.
 
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
