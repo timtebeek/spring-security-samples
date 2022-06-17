@@ -55,7 +55,7 @@ class LeaveRequestController {
 	}
 
 	@GetMapping("/view/request/{id}")
-	public ResponseEntity<LeaveRequestDTO> ViewRequest(@PathVariable UUID id) {
+	public ResponseEntity<LeaveRequestDTO> viewRequest(@PathVariable UUID id) {
 		Optional<LeaveRequest> retrieved = service.retrieve(id);
 		if (retrieved.isEmpty()) {
 			return noContent().build();
@@ -83,12 +83,14 @@ class LeaveRequestController {
 @NoArgsConstructor
 class LeaveRequestDTO {
 
+	private UUID id;
 	private String employee;
 	private LocalDate fromDate;
 	private LocalDate toDate;
 	private Status status;
 
 	LeaveRequestDTO(LeaveRequest leaveRequest) {
+		this.id = leaveRequest.getId();
 		this.employee = leaveRequest.getEmployee();
 		this.fromDate = leaveRequest.getFromDate();
 		this.toDate = leaveRequest.getToDate();
