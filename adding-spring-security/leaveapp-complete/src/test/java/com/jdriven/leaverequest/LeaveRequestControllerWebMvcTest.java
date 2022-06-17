@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.jdriven.leaverequest.LeaveRequest.Status;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +11,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.jdriven.leaverequest.LeaveRequest.Status.APPROVED;
+import static com.jdriven.leaverequest.LeaveRequest.Status.DENIED;
+import static com.jdriven.leaverequest.LeaveRequest.Status.PENDING;
 import static java.time.LocalDate.of;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,9 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LeaveRequestControllerWebMvcTest {
 
 	@MockBean
-	private JwtDecoder jwtDecoder;
-
-	@MockBean
 	private LeaveRequestService service;
 
 	@Autowired
@@ -45,7 +42,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testRequest() throws Exception {
 			when(service.request(anyString(), any(), any()))
-					.thenReturn(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.PENDING));
+					.thenReturn(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			mockmvc.perform(post("/request/{employee}", "Alice")
 					.with(jwt().jwt(builder -> builder.subject("Alice")))
 					.param("from", "2022-11-30")
@@ -59,8 +56,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testViewRequest() throws Exception {
 			when(service.retrieve(any()))
-					.thenReturn(
-							Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.APPROVED)));
+					.thenReturn(Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(get("/view/request/{id}", UUID.randomUUID())
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
 					.andExpect(status().isOk())
@@ -72,7 +68,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testViewEmployee() throws Exception {
 			when(service.retrieveFor("Alice"))
-					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.APPROVED)));
+					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(get("/view/employee/{employee}", "Alice")
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
 					.andExpect(status().isOk())
@@ -89,8 +85,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testApprove() throws Exception {
 			when(service.approve(any()))
-					.thenReturn(
-							Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.APPROVED)));
+					.thenReturn(Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(post("/approve/{id}", UUID.randomUUID())
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isAccepted())
@@ -109,8 +104,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testDeny() throws Exception {
 			when(service.deny(any()))
-					.thenReturn(
-							Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.DENIED)));
+					.thenReturn(Optional.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), DENIED)));
 			mockmvc.perform(post("/deny/{id}", UUID.randomUUID())
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isAccepted())
@@ -129,7 +123,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testViewAll() throws Exception {
 			when(service.retrieveAll())
-					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), Status.APPROVED)));
+					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(get("/view/all")
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isOk())
