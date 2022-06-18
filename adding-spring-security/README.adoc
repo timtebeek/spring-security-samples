@@ -115,7 +115,7 @@ They are identified below using the annotation and argument that bootstraps the 
 We'll go over each test and the changes needed to make them pass again.
 
 ==== @WebMvcTest with controller
-First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
+First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvcTest` together with `MockMvc`.
 Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
 
 - The `401 Unauthorized` response on `GET` requests we get because we're not yet passing an `Authorization: Bearer eyJ...` header in our tests.
@@ -174,7 +174,7 @@ For instance:
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
 We'll add a variety of security annotation and expressions, all of which are documented extensively in 
 https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/index.html[the Authorization chapter of Spring Security].
-The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
+The security annotations need to be enabled through `@EnableMethodSecurity(jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
 [source,java]
 ----
@@ -196,7 +196,7 @@ To approve or deny leave requests, the active user should have the "HR" role.
 
 ==== @SpringBootTest with WebEnvironment.NONE
 Our `LeaveRequestServiceTest` methods now also need an active user, where this was not needed before.
-We use the same `@WithMockUser` as we've seen earlier, with arguments added to match either the required user name, or the required "HR" role.
+We use the `@WithMockUser` annotation from `spring-security-test`, with arguments added to match either the required user name, or the required "HR" role.
 [source,java]
 ----
 @Test

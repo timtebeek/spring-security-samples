@@ -37,7 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
-	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {};
+	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {
+	};
 
 	@Autowired
 	private LeaveRequestRepository repository;
