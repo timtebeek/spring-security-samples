@@ -30,6 +30,21 @@ class LeaveRequestService {
 		return repo.save(leaveRequest);
 	}
 
+	@PreAuthorize("#employee == authentication.name or hasRole('HR')")
+	public List<LeaveRequest> retrieveFor(String employee) {
+		return repo.findByEmployee(employee);
+	}
+
+	@PostAuthorize("returnObject.orElse(null)?.employee == authentication.name or hasRole('HR')")
+	public Optional<LeaveRequest> retrieve(UUID id) {
+		return repo.findById(id);
+	}
+
+	@RolesAllowed("HR")
+	public List<LeaveRequest> retrieveAll() {
+		return repo.findAll();
+	}
+
 	@RolesAllowed("HR")
 	public Optional<LeaveRequest> approve(UUID id) {
 		Optional<LeaveRequest> found = repo.findById(id);
@@ -42,21 +57,6 @@ class LeaveRequestService {
 		Optional<LeaveRequest> found = repo.findById(id);
 		found.ifPresent(lr -> lr.setStatus(Status.DENIED));
 		return found;
-	}
-
-	@PostAuthorize("returnObject.orElse(null)?.employee == authentication.name or hasRole('HR')")
-	public Optional<LeaveRequest> retrieve(UUID id) {
-		return repo.findById(id);
-	}
-
-	@PreAuthorize("#employee == authentication.name or hasRole('HR')")
-	public List<LeaveRequest> retrieveFor(String employee) {
-		return repo.findByEmployee(employee);
-	}
-
-	@RolesAllowed("HR")
-	public List<LeaveRequest> retrieveAll() {
-		return repo.findAll();
 	}
 
 }

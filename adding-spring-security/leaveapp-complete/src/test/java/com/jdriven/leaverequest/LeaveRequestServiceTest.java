@@ -2,6 +2,7 @@ package com.jdriven.leaverequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static com.jdriven.leaverequest.LeaveRequest.Status.APPROVED;
@@ -17,6 +19,7 @@ import static com.jdriven.leaverequest.LeaveRequest.Status.DENIED;
 import static com.jdriven.leaverequest.LeaveRequest.Status.PENDING;
 import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -51,6 +54,13 @@ class LeaveRequestServiceTest {
 			verify(repository).findById(saved.getId());
 			assertThat(retrieved).isPresent();
 			assertThat(retrieved).get().isSameAs(saved);
+		}
+
+		@Test
+		void testRetrieveByIdMissing() {
+			UUID randomUUID = UUID.randomUUID();
+			assertThrows(AccessDeniedException.class, () -> service.retrieve(randomUUID));
+			verify(repository).findById(randomUUID);
 		}
 
 		@Test
