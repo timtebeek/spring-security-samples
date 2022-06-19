@@ -61,7 +61,6 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		void beforeEach() {
 			when(jwtDecoder.decode(anyString())).thenReturn(Jwt.withTokenValue("token")
 					.subject("alice")
-					.claim("realm_access", Map.of("roles", List.of("USER")))
 					.header("alg", "none")
 					.build());
 		}
