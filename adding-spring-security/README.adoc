@@ -18,12 +18,12 @@ Initially this application was only used from within the HR department, who rece
 
 Now we want to open up this application to all employees, so they can file their leave requests themselves.
 Anyone from the HR department can then either approve or deny a leave request.
-Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-workshop/tree/master/adding-spring-security/leaveapp-initial[leaveapp-initial].
+Simple enough! For a version of our application without any security in place have a look at https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/leaveapp-initial[leaveapp-initial].
 
 == Which dependency to add?
 The first step in adding security to our application is picking the right dependency to add to our project.
 However, even figuring out which dependency to add can be difficult these days!
-Looking at https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.6.7&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=security,oauth2-client,oauth2-resource-server,okta,data-ldap,azure-active-directory[start.spring.io]
+Looking at https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.7.0&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=security,oauth2-client,oauth2-resource-server,okta,data-ldap,azure-active-directory[start.spring.io]
 we can see there are already six different dependencies related to Spring Security and/or OAuth2.
 In part this is down to a https://spring.io/blog/2019/11/14/spring-security-oauth-2-0-roadmap-update[restructuring of OAuth2 support],
 with OAuth2 resource server and client support now https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix[moved into Spring Security 5.2+].
@@ -76,7 +76,9 @@ spring:
           issuer-uri: http://localhost:8090/auth/realms/spring-cloud-gateway-realm
 ----
 Our application will now call out to the configured `issuer-uri` during startup, to configure the `JwtDecoder`.
-During development we will either link:keycloak/README.adoc[use Keycloak] or link:wiremock/README.adoc[WireMock] to serve the configured `issuer-uri` endpoint.
+During development we will either
+https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/keycloak/[use Keycloak] or 
+https://github.com/timtebeek/spring-security-workshop/tree/main/adding-spring-security/wiremock/[WireMock] to serve the configured `issuer-uri` endpoint.
 
 Once this configuration is in place we can restart our application.
 Looking at the logs we no longer see the generated password; Great!
@@ -98,7 +100,7 @@ eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpu
 # Save the token in an environment variable
 $ export token=eyJhbGc...
 # Create a leave request for a specific user and time window
-$ http POST ':8080/request/tim?from=2020-03-21&to=2020-04-11' "Authorization: Bearer ${token}"
+$ http POST ':8080/request/alice?from=2022-08-21&to=2022-09-11' "Authorization: Bearer ${token}"
 # Retrieve all leave requests
 $ http :8080/view/all "Authorization: Bearer ${token}"
 ----
@@ -113,7 +115,7 @@ They are identified below using the annotation and argument that bootstraps the 
 We'll go over each test and the changes needed to make them pass again.
 
 ==== @WebMvcTest with controller
-First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvc` together with `MockMvc`.
+First up we wish to make `LeaveRequestControllerWebMvcTest` pass again; We're testing the controller in isolation here, using `@WebMvcTest` together with `MockMvc`.
 Running the tests we see `GET` requests now get a `401 Unauthorized` response, while `POST` requests get a `403 Forbidden` response.
 
 - The `401 Unauthorized` response on `GET` requests we get because we're not yet passing an `Authorization: Bearer eyJ...` header in our tests.
@@ -172,7 +174,7 @@ For instance:
 Since all requests pass through our `LeaveRequestService`, this seems like the perfect place to add our security restrictions.
 We'll add a variety of security annotation and expressions, all of which are documented extensively in 
 https://docs.spring.io/spring-security/reference/5.7.1/servlet/authorization/index.html[the Authorization chapter of Spring Security].
-The security annotations need to be enabled through `@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
+The security annotations need to be enabled through `@EnableMethodSecurity(jsr250Enabled = true)`, as without this annotation they fail to enforce anything!
 
 [source,java]
 ----
@@ -194,20 +196,20 @@ To approve or deny leave requests, the active user should have the "HR" role.
 
 ==== @SpringBootTest with WebEnvironment.NONE
 Our `LeaveRequestServiceTest` methods now also need an active user, where this was not needed before.
-We use the same `@WithMockUser` as we've seen earlier, with arguments added to match either the required user name, or the required "HR" role.
+We use the `@WithMockUser` annotation from `spring-security-test`, with arguments added to match either the required user name, or the required "HR" role.
 [source,java]
 ----
 @Test
 @WithMockUser(username = "Alice")
 void testRequest() {
-  LeaveRequest leaveRequest = service.request("Alice", of(2019, 11, 30), of(2019, 12, 03));
+  LeaveRequest leaveRequest = service.request("Alice", of(2022, 11, 30), of(2022, 12, 03));
   verify(repository).save(leaveRequest);
 }
 
 @Test
 @WithMockUser(roles = "HR")
 void testApprove() {
-  LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 03), PENDING));
+  LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 03), PENDING));
   Optional<LeaveRequest> approved = service.approve(saved.getId());
   [...]
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LeaveRequest {
+class LeaveRequest {
 
 	private final UUID id = UUID.randomUUID();
 

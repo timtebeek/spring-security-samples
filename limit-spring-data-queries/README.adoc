@@ -41,7 +41,7 @@ TIP: Make sure to only use the `@PostAuthorize` on methods that do not make modi
 Lastly, we need to have Spring Security intercept calls to methods with these annotations, using the following configuration.
 [source,java]
 ----
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 ----
 
 === Limit query result

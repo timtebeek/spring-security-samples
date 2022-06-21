@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
-public class LeaveRequestController {
+class LeaveRequestController {
 
 	private final LeaveRequestService service;
 
@@ -54,8 +54,8 @@ public class LeaveRequestController {
 		return accepted().body(new LeaveRequestDTO(denied.get()));
 	}
 
-	@GetMapping("/view/id/{id}")
-	public ResponseEntity<LeaveRequestDTO> viewId(@PathVariable UUID id) {
+	@GetMapping("/view/request/{id}")
+	public ResponseEntity<LeaveRequestDTO> viewRequest(@PathVariable UUID id) {
 		Optional<LeaveRequest> retrieved = service.retrieve(id);
 		if (retrieved.isEmpty()) {
 			return noContent().build();
@@ -83,12 +83,14 @@ public class LeaveRequestController {
 @NoArgsConstructor
 class LeaveRequestDTO {
 
+	private UUID id;
 	private String employee;
 	private LocalDate fromDate;
 	private LocalDate toDate;
 	private Status status;
 
 	LeaveRequestDTO(LeaveRequest leaveRequest) {
+		this.id = leaveRequest.getId();
 		this.employee = leaveRequest.getEmployee();
 		this.fromDate = leaveRequest.getFromDate();
 		this.toDate = leaveRequest.getToDate();

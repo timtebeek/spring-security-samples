@@ -1,0 +1,66 @@
+= Leave app
+
+Imagine a Human Resources department that has a small application to track and approve/deny leave requests.
+Initially this application was only used from within the HR department, who received requests via phone or email.
+
+Now we open up this application to all employees, so they can view and file (only their own) leave requests themselves.
+Anyone from the HR department can then either approve or deny a leave request, and view all requests.
+
+== Usage
+
+Start the application by either running `LeaveRequestApplication` directly from your IDE, or by running this command from the workshop repository root:
+
+[source,bash]
+----
+# ~/workspace/spring-security-workshop $
+./mvnw spring-boot:run --file adding-spring-security/leaveapp-complete/pom.xml
+----
+
+The application exposes a REST API, which you can access with either `httpie` or `curl`.
+
+=== HTTPie
+[source,bash]
+----
+# Store token
+export token=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRSS1mdW1sLTRyTnBrdVZxWVg0elpuZlRUZW1hSkxoZ183Z0dULTZiSFlVIn0.eyJqdGkiOiI0OWFkZmVlOS02MGEwLTQxMTItOGI1OS1hZWEwOTliYjlmYTIiLCJleHAiOjE2NTk4OTg3NjYsIm5iZiI6MCwiaWF0IjoxNTczNDk4NzY2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwOTAvYXV0aC9yZWFsbXMvc3ByaW5nLWNsb3VkLWdhdGV3YXktcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiYWQ4MjRkZmMtNmFmZi00NWEzLWJlOWQtOTU0ZDUwZmJkYjdhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ByaW5nLWNsb3VkLWdhdGV3YXktY2xpZW50Iiwibm9uY2UiOiJwMGtsejZlc0VYNnYtWU8tXzVGd2JITk95N2NudklibEsweTBiWi1iUVpNIiwiYXV0aF90aW1lIjoxNTczNDk4NzY2LCJzZXNzaW9uX3N0YXRlIjoiZjIyMjY4ZTAtOTJlZS00MDU4LTgzMzctMzkyNDg4YjJlNTQwIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcGhvbmUgbWljcm9wcm9maWxlLWp3dCBvZmZsaW5lX2FjY2VzcyBwcm9maWxlIGVtYWlsIGFkZHJlc3MiLCJ1cG4iOiJhbGljZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhZGRyZXNzIjp7fSwibmFtZSI6IkFsaWNlIiwiZ3JvdXBzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWxpY2UiLCJnaXZlbl9uYW1lIjoiQWxpY2UifQ.hHK8E-01eFb4UZtBjclVronp-6jfVbhxh9U0m0DEdYQE8YGWFCjMxUcfeI0Rx9zueeC_HJsFT4wcegs8Qh6Z2n7IGWbf0Vtg0fzVH9vFXkwbFBdbCZJz4MZ1Zc3cpC2UrSnuPDc8EIn1FQrKIEF8nqEcNzcL3ujxligvOern2A4xUS1GLqrLKmbPPbKocESZb75EMbmEPFDoctgI1n4vniOz9j242WxbcMjM7INeIsPCKWqvgaeYHOKlgW2CfHfsLPr_XQw5VvCMWJ1GHficCwwjyL-PeemHmBS6eO6EnHpl5Ftm7siATcZuJXQHTosb6b38Gkw2s6-yGQJcbQc01g
+
+# Create a leave request for a specific user and time window
+http POST ':8080/request/alice?from=2022-08-21&to=2022-09-11' "Authorization: Bearer ${token}"
+
+# View leave requests for employee
+http :8080/view/employee/alice "Authorization: Bearer ${token}"
+
+# Approve leave request
+http POST :8080/approve/2a37e1b6-d7e3-45fd-8b50-59357425d62e "Authorization: Bearer ${token}"
+
+# Deny leave request
+http POST :8080/deny/2a37e1b6-d7e3-45fd-8b50-59357425d62e "Authorization: Bearer ${token}"
+
+# View leave request
+http :8080/view/request/2a37e1b6-d7e3-45fd-8b50-59357425d62e "Authorization: Bearer ${token}"
+
+# View all leave requests
+http :8080/view/all "Authorization: Bearer ${token}"
+----
+
+=== curl
+[source,bash]
+----
+# Create a leave request for a specific user and time window
+curl -X POST -H "Authorization: Bearer ${token}" 'http://localhost:8080/request/alice?from=2022-08-21&to=2022-09-11'
+
+# View leave requests for employee
+curl -H "Authorization: Bearer ${token}" http://localhost:8080/view/employee/alice
+
+# Approve leave request
+curl -X POST -H "Authorization: Bearer ${token}" http://localhost:8080/approve/2a37e1b6-d7e3-45fd-8b50-59357425d62e
+
+# Deny leave request
+curl -X POST -H "Authorization: Bearer ${token}" http://localhost:8080/deny/2a37e1b6-d7e3-45fd-8b50-59357425d62e
+
+# View leave request
+curl -H "Authorization: Bearer ${token}" http://localhost:8080/view/request/2a37e1b6-d7e3-45fd-8b50-59357425d62e
+
+# View all leave requests
+curl -H "Authorization: Bearer ${token}" http://localhost:8080/view/all
+----

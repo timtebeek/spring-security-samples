@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class LeaveRequestRepository {
+class LeaveRequestRepository {
 
-	private Map<UUID, LeaveRequest> leaveRequests = new TreeMap<>();
+	private final Map<UUID, LeaveRequest> leaveRequests = new TreeMap<>();
 
 	public LeaveRequest save(LeaveRequest leaveRequest) {
 		leaveRequests.put(leaveRequest.getId(), leaveRequest);

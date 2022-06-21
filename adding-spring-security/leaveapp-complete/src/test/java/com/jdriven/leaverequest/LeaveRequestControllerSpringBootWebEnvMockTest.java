@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.jdriven.leaverequest.LeaveRequest.Status.APPROVED;
@@ -28,12 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class LeaveRequestControllerSpringBootWebEnvMockTest {
-
-	/**
-	 * Prevent call to `issuer-uri`.
-	 */
-	@MockBean
-	private JwtDecoder jwtDecoder;
 
 	@Autowired
 	private LeaveRequestRepository repository;
@@ -52,36 +44,39 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 		@Test
 		void testRequest() throws Exception {
 			mockmvc.perform(post("/request/{employee}", "Alice")
-					.with(jwt().jwt(builder -> builder.subject("Alice")))
-					.param("from", "2019-11-30")
-					.param("to", "2019-12-03"))
-					.andExpect(status().isAccepted())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.employee").value("Alice"))
-					.andExpect(jsonPath("$.status").value("PENDING"));
+					.param("from", "2022-11-30")
+					.param("to", "2022-12-03")
+					.with(jwt().jwt(builder -> builder.subject("Alice"))))
+					.andExpectAll(
+							status().isAccepted(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$.employee").value("Alice"),
+							jsonPath("$.status").value("PENDING"));
 		}
 
 		@Test
-		void testViewId() throws Exception {
+		void testViewRequest() throws Exception {
 			LeaveRequest saved = repository
-					.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
-			mockmvc.perform(get("/view/id/{id}", saved.getId())
+					.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED));
+			mockmvc.perform(get("/view/request/{id}", saved.getId())
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
-					.andExpect(status().isOk())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.employee").value("Alice"))
-					.andExpect(jsonPath("$.status").value("APPROVED"));
+					.andExpectAll(
+							status().isOk(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$.employee").value("Alice"),
+							jsonPath("$.status").value("APPROVED"));
 		}
 
 		@Test
 		void testViewEmployee() throws Exception {
-			repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
+			repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED));
 			mockmvc.perform(get("/view/employee/{employee}", "Alice")
 					.with(jwt().jwt(builder -> builder.subject("Alice"))))
-					.andExpect(status().isOk())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$[0].employee").value("Alice"))
-					.andExpect(jsonPath("$[0].status").value("APPROVED"));
+					.andExpectAll(
+							status().isOk(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$[0].employee").value("Alice"),
+							jsonPath("$[0].status").value("APPROVED"));
 		}
 
 	}
@@ -92,13 +87,14 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 		@Test
 		void testApprove() throws Exception {
 			LeaveRequest saved = repository
-					.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+					.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			mockmvc.perform(post("/approve/{id}", saved.getId())
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
-					.andExpect(status().isAccepted())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.employee").value("Alice"))
-					.andExpect(jsonPath("$.status").value("APPROVED"));
+					.andExpectAll(
+							status().isAccepted(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$.employee").value("Alice"),
+							jsonPath("$.status").value("APPROVED"));
 		}
 
 		@Test
@@ -110,18 +106,19 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 
 		@Test
 		void testDeny() throws Exception {
-			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			mockmvc.perform(post("/deny/{id}", saved.getId())
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
-					.andExpect(status().isAccepted())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.employee").value("Alice"))
-					.andExpect(jsonPath("$.status").value("DENIED"));
+					.andExpectAll(
+							status().isAccepted(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$.employee").value("Alice"),
+							jsonPath("$.status").value("DENIED"));
 		}
 
 		@Test
-		void testViewIdMissing() throws Exception {
-			mockmvc.perform(get("/view/id/{id}", UUID.randomUUID())
+		void testViewRequestMissing() throws Exception {
+			mockmvc.perform(get("/view/request/{id}", UUID.randomUUID())
 					// Alice would get a AccessDeniedException on missing returnObject
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
 					.andExpect(status().isNoContent());
@@ -129,13 +126,14 @@ class LeaveRequestControllerSpringBootWebEnvMockTest {
 
 		@Test
 		void testViewAll() throws Exception {
-			repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), APPROVED));
+			repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED));
 			mockmvc.perform(get("/view/all")
 					.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_HR"))))
-					.andExpect(status().isOk())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$[0].employee").value("Alice"))
-					.andExpect(jsonPath("$[0].status").value("APPROVED"));
+					.andExpectAll(
+							status().isOk(),
+							content().contentType(MediaType.APPLICATION_JSON),
+							jsonPath("$[0].employee").value("Alice"),
+							jsonPath("$[0].status").value("APPROVED"));
 		}
 
 	}

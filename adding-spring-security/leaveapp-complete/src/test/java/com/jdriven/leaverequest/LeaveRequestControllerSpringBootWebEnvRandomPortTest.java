@@ -37,7 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
-	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {};
+	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {
+	};
 
 	@Autowired
 	private LeaveRequestRepository repository;
@@ -60,15 +61,14 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		void beforeEach() {
 			when(jwtDecoder.decode(anyString())).thenReturn(Jwt.withTokenValue("token")
 					.subject("alice")
-					.claim("realm_access", Map.of("roles", List.of("USER")))
 					.header("alg", "none")
 					.build());
 		}
 
 		@Test
 		void testRequest() throws Exception {
-			LocalDate from = of(2019, 11, 30);
-			LocalDate to = of(2019, 12, 3);
+			LocalDate from = of(2022, 11, 30);
+			LocalDate to = of(2022, 12, 3);
 
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/request/{employee}?from={from}&to={to}",
@@ -82,10 +82,10 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		}
 
 		@Test
-		void testViewId() throws Exception {
-			LeaveRequest saved = repository.save(new LeaveRequest("alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+		void testViewRequest() throws Exception {
+			LeaveRequest saved = repository.save(new LeaveRequest("alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
-			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/id/{id}", GET, httpEntity,
+			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, saved.getId());
 			assertThat(response.getStatusCode()).isEqualByComparingTo(OK);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
@@ -95,7 +95,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
 		@Test
 		void testViewEmployee() throws Exception {
-			repository.save(new LeaveRequest("alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+			repository.save(new LeaveRequest("alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<List<LeaveRequestDTO>> response = restTemplate.exchange("/view/employee/{employee}", GET,
 					httpEntity, typeref, "alice");
@@ -120,7 +120,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
 		@Test
 		void testApprove() throws Exception {
-			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/approve/{id}", HttpMethod.POST,
 					httpEntity,
@@ -142,7 +142,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
 		@Test
 		void testDeny() throws Exception {
-			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+			LeaveRequest saved = repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/deny/{id}", HttpMethod.POST, httpEntity,
 					LeaveRequestDTO.class, saved.getId());
@@ -153,16 +153,16 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		}
 
 		@Test
-		void testViewIdMissing() throws Exception {
+		void testViewRequestMissing() throws Exception {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
-			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/id/{id}", GET, httpEntity,
+			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, UUID.randomUUID());
 			assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
 		}
 
 		@Test
 		void testViewAll() throws Exception {
-			repository.save(new LeaveRequest("Alice", of(2019, 11, 30), of(2019, 12, 3), PENDING));
+			repository.save(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), PENDING));
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<List<LeaveRequestDTO>> response = restTemplate.exchange("/view/all", GET,
 					httpEntity, typeref);
