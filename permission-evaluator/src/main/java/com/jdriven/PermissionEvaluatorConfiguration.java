@@ -1,7 +1,6 @@
 package com.jdriven;
 
 import com.jdriven.permission.CustomPermissionEvaluator;
-
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = false)
-public class PermissionEvaluatorConfiguration {
+class PermissionEvaluatorConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)

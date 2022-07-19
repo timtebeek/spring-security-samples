@@ -56,7 +56,36 @@ We've provided an `CustomPermissionEvaluator` implementation to serve as an exam
 It first checks the target domain object type, before calling out to the appropriate permission store to check for access.
 The access rules here are modeled quite simply, but you can extend this as much as needed for your domain.
 
-Lastly, the `@PreAuthorize` annotations need to be activated through `@EnableGlobalMethodSecurity(prePostEnabled = true)`, which is done in `PermissionEvaluatorConfiguration`.
+=== Configure method security
+Lastly, the `@PreAuthorize` annotations need to be activated, which we will do in `PermissionEvaluatorConfiguration`.
+
+At present, we could only annotate `PermissionEvaluatorConfiguration` with `@EnableGlobalMethodSecurity(prePostEnabled = true)` to protect our methods annotated with `@PreAuthorize`.
+That works and we would be done, but there's a slight catch related to more recent developments around https://docs.spring.io/spring-security/reference/5.7.2/servlet/authorization/method-security.html#_enablemethodsecurity[`@EnableMethodSecurity`].
+The documentation lists some of the benefits of `EnableMethodSecurity` over `EnableGlobalMethodSecurity`.
+
+We need to add the following configuration to wire up our custom permission evaluator.
+
+.PermissionEvaluatorConfiguration.java 
+[source,java]
+----
+@Configuration
+@EnableMethodSecurity(prePostEnabled = false)
+class PermissionEvaluatorConfiguration {
+
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	Advisor preAuthorizeAuthorizationMethodInterceptor(CustomPermissionEvaluator customPermissionEvaluator) {
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+
+		PreAuthorizeAuthorizationManager authorizationManager = new PreAuthorizeAuthorizationManager();
+		authorizationManager.setExpressionHandler(expressionHandler);
+
+		return AuthorizationManagerBeforeMethodInterceptor.preAuthorize(authorizationManager);
+	}
+
+}
+----
 
 === Tests
 Our `CustomPermissionEvaluatorIT` tests use mock users _Alice_ and _Bob_, with a malicious third user _Eve_, all trying to read and write a single spreadsheet.
