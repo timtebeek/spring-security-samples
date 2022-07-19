@@ -60,12 +60,12 @@ The access rules here are modeled quite simply, but you can extend this as much 
 Lastly, the `@PreAuthorize` annotations need to be activated, which we will do in `PermissionEvaluatorConfiguration`.
 
 At present, we could only annotate `PermissionEvaluatorConfiguration` with `@EnableGlobalMethodSecurity(prePostEnabled = true)` to protect our methods annotated with `@PreAuthorize`.
-That works and we would be done, but there's a slight catch related to more recent developments around https://docs.spring.io/spring-security/reference/5.7.2/servlet/authorization/method-security.html#_enablemethodsecurity[`@EnableMethodSecurity`].
-The documentation lists some of the benefits of `EnableMethodSecurity` over `EnableGlobalMethodSecurity`.
+That works and we would be done, but there's a slight catch related to more https://docs.spring.io/spring-security/reference/5.7.2/servlet/authorization/method-security.html#_enablemethodsecurity[recent developments around `@EnableMethodSecurity`].
+The documentation lists some of the benefits of using `EnableMethodSecurity` over `EnableGlobalMethodSecurity`.
 
 We need to add the following configuration to wire up our custom permission evaluator.
 
-.PermissionEvaluatorConfiguration.java 
+.PermissionEvaluatorConfiguration.java
 [source,java]
 ----
 @Configuration
