@@ -14,6 +14,6 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: ./mvnw -B verify --file pom.xml
+      run: ./mvnw -B -Dstyle.color=always verify --file pom.xml
     - name: Spotless Check
-      run: ./mvnw -B spotless:check
+      run: ./mvnw -B -Dstyle.color=always spotless:check
