@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,10 +20,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @ConditionalOnWebApplication
-public class WebSecurityConfig {
+class WebSecurityConfig {
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
 				.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
 				.oauth2ResourceServer(oauth2 -> oauth2
@@ -31,6 +32,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.issuer-uri")
 	JwtDecoder jwtDecoderByIssuerUri(OAuth2ResourceServerProperties properties) {
 		String issuerUri = properties.getJwt().getIssuerUri();
 		NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuerUri);

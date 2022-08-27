@@ -1,0 +1,10 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: false
+
+logging:
+  level:
+    org.springframework.security: DEBUG
