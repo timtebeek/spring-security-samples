@@ -11,6 +11,7 @@ import com.jdriven.leaverequest.LeaveRequest.Status;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.Data;
@@ -75,6 +76,11 @@ class LeaveRequestController {
 		return service.retrieveAll().stream()
 				.map(LeaveRequestDTO::new)
 				.collect(Collectors.toList());
+	}
+
+	@GetMapping("/whoami")
+	public JwtAuthenticationToken whoami(JwtAuthenticationToken auth) {
+		return auth;
 	}
 
 }
