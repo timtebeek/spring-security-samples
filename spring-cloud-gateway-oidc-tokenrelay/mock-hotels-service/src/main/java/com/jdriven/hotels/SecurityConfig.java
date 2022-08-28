@@ -27,7 +27,7 @@ public class SecurityConfig {
 		// Validate tokens through configured OpenID Provider
 		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 		// Require authentication for all requests
-		http.authorizeRequests().anyRequest().authenticated();
+		http.authorizeHttpRequests().anyRequest().authenticated();
 		// Allow showing pages within a frame
 		http.headers().frameOptions().sameOrigin();
 		return http.build();
