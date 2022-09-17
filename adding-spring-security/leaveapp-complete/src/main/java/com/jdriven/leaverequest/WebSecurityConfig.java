@@ -49,8 +49,8 @@ class KeycloakRealmRoleConverter implements Converter<Jwt, JwtAuthenticationToke
 	@Override
 	@SuppressWarnings("unchecked")
 	public JwtAuthenticationToken convert(Jwt jwt) {
-		Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().getOrDefault("realm_access", Map.of());
-		List<String> roles = (List<String>) realmAccess.getOrDefault("roles", List.of());
+		Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().getOrDefault("realm_access", Collections.emptyMap());
+		List<String> roles = (List<String>) realmAccess.getOrDefault("roles", Collections.emptyList());
 		List<GrantedAuthority> authorities = roles.stream()
 				.map(roleName -> "ROLE_" + roleName)
 				.map(SimpleGrantedAuthority::new)

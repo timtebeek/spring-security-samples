@@ -15,7 +15,8 @@
 	<name>spring-security-samples</name>
 	<description>Spring Security 5 sample projects</description>
 	<properties>
-		<java.version>11</java.version>
+		<!-- 11 & 17+ work as well! -->
+		<java.version>8</java.version>
 	</properties>
 	<modules>
 		<module>adding-spring-security</module>

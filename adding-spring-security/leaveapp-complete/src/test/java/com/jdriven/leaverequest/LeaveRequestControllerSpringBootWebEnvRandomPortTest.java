@@ -1,8 +1,8 @@
 package com.jdriven.leaverequest;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 
-	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<>() {
-	};
+	private static final ParameterizedTypeReference<List<LeaveRequestDTO>> typeref = new ParameterizedTypeReference<List<LeaveRequestDTO>>() {};
 
 	@Autowired
 	private LeaveRequestRepository repository;
@@ -113,7 +112,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		void beforeEach() {
 			when(jwtDecoder.decode(anyString())).thenReturn(Jwt.withTokenValue("token")
 					.subject("Bob")
-					.claim("realm_access", Map.of("roles", List.of("HR")))
+					.claim("realm_access", Collections.singletonMap("roles", Collections.singletonList("HR")))
 					.header("alg", "none")
 					.build());
 		}

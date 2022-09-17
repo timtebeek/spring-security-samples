@@ -2,7 +2,6 @@ package com.jdriven.leaverequest;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,29 +38,23 @@ class LeaveRequestController {
 
 	@PostMapping("/approve/{id}")
 	public ResponseEntity<LeaveRequestDTO> approve(@PathVariable UUID id) {
-		Optional<LeaveRequest> approved = service.approve(id);
-		if (approved.isEmpty()) {
-			return noContent().build();
-		}
-		return accepted().body(new LeaveRequestDTO(approved.get()));
+		return service.approve(id)
+				.map(lr -> accepted().body(new LeaveRequestDTO(lr)))
+				.orElse(noContent().build());
 	}
 
 	@PostMapping("/deny/{id}")
 	public ResponseEntity<LeaveRequestDTO> deny(@PathVariable UUID id) {
-		Optional<LeaveRequest> denied = service.deny(id);
-		if (denied.isEmpty()) {
-			return noContent().build();
-		}
-		return accepted().body(new LeaveRequestDTO(denied.get()));
+		return service.deny(id)
+				.map(lr -> accepted().body(new LeaveRequestDTO(lr)))
+				.orElse(noContent().build());
 	}
 
 	@GetMapping("/view/request/{id}")
 	public ResponseEntity<LeaveRequestDTO> viewRequest(@PathVariable UUID id) {
-		Optional<LeaveRequest> retrieved = service.retrieve(id);
-		if (retrieved.isEmpty()) {
-			return noContent().build();
-		}
-		return ok(new LeaveRequestDTO(retrieved.get()));
+		return service.retrieve(id)
+				.map(lr -> ok().body(new LeaveRequestDTO(lr)))
+				.orElse(noContent().build());
 	}
 
 	@GetMapping("/view/employee/{employee}")
