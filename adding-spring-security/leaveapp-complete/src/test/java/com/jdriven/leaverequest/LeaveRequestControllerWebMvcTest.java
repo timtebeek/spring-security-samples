@@ -1,6 +1,6 @@
 package com.jdriven.leaverequest;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,7 +69,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testViewEmployee() throws Exception {
 			when(service.retrieveFor("Alice"))
-					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
+					.thenReturn(Collections.singletonList(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(get("/view/employee/{employee}", "Alice")
 					.with(jwt()))
 					.andExpectAll(
@@ -127,7 +127,7 @@ class LeaveRequestControllerWebMvcTest {
 		@Test
 		void testViewAll() throws Exception {
 			when(service.retrieveAll())
-					.thenReturn(List.of(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
+					.thenReturn(Collections.singletonList(new LeaveRequest("Alice", of(2022, 11, 30), of(2022, 12, 3), APPROVED)));
 			mockmvc.perform(get("/view/all")
 					.with(jwt()))
 					.andExpectAll(
