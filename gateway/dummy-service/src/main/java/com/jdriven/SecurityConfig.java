@@ -16,10 +16,8 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeHttpRequests()
-
 				// require the user to have the "dummy" role
-				.antMatchers("/**").hasRole("dummy")
-
+				.requestMatchers("/**").hasRole("dummy")
 				.anyRequest().authenticated()
 				.and()
 				.oauth2ResourceServer()

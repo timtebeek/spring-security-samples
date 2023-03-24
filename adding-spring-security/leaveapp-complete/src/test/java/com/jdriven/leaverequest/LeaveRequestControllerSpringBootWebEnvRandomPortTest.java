@@ -3,6 +3,7 @@ package com.jdriven.leaverequest;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/request/{employee}?from={from}&to={to}",
 					HttpMethod.POST, httpEntity, LeaveRequestDTO.class, "alice", from, to);
-			assertThat(response.getStatusCode()).isEqualByComparingTo(ACCEPTED);
+			assertThat(response.getStatusCode()).isEqualTo(ACCEPTED);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().getEmployee()).isEqualTo("alice");
 			assertThat(response.getBody().getFromDate()).isEqualTo(from);
@@ -86,7 +87,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, saved.getId());
-			assertThat(response.getStatusCode()).isEqualByComparingTo(OK);
+			assertThat(response.getStatusCode()).isEqualTo(OK);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().getEmployee()).isEqualTo("alice");
 			assertThat(response.getBody().getStatus()).isEqualByComparingTo(PENDING);
@@ -98,7 +99,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<List<LeaveRequestDTO>> response = restTemplate.exchange("/view/employee/{employee}", GET,
 					httpEntity, typeref, "alice");
-			assertThat(response.getStatusCode()).isEqualByComparingTo(OK);
+			assertThat(response.getStatusCode()).isEqualTo(OK);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().get(0).getEmployee()).isEqualTo("alice");
 			assertThat(response.getBody().get(0).getStatus()).isEqualByComparingTo(PENDING);
@@ -112,7 +113,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		void beforeEach() {
 			when(jwtDecoder.decode(anyString())).thenReturn(Jwt.withTokenValue("token")
 					.subject("Bob")
-					.claim("realm_access", Collections.singletonMap("roles", Collections.singletonList("HR")))
+					.claim("realm_access", Map.of("roles", Collections.singletonList("HR")))
 					.header("alg", "none")
 					.build());
 		}
@@ -124,7 +125,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/approve/{id}", HttpMethod.POST,
 					httpEntity,
 					LeaveRequestDTO.class, saved.getId());
-			assertThat(response.getStatusCode()).isEqualByComparingTo(ACCEPTED);
+			assertThat(response.getStatusCode()).isEqualTo(ACCEPTED);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().getEmployee()).isEqualTo("Alice");
 			assertThat(response.getBody().getStatus()).isEqualByComparingTo(APPROVED);
@@ -136,7 +137,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/approve/{id}", HttpMethod.POST,
 					httpEntity,
 					LeaveRequestDTO.class, UUID.randomUUID());
-			assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
+			assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 		}
 
 		@Test
@@ -145,7 +146,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/deny/{id}", HttpMethod.POST, httpEntity,
 					LeaveRequestDTO.class, saved.getId());
-			assertThat(response.getStatusCode()).isEqualByComparingTo(ACCEPTED);
+			assertThat(response.getStatusCode()).isEqualTo(ACCEPTED);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().getEmployee()).isEqualTo("Alice");
 			assertThat(response.getBody().getStatus()).isEqualByComparingTo(DENIED);
@@ -156,7 +157,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<LeaveRequestDTO> response = restTemplate.exchange("/view/request/{id}", GET, httpEntity,
 					LeaveRequestDTO.class, UUID.randomUUID());
-			assertThat(response.getStatusCode()).isEqualByComparingTo(NO_CONTENT);
+			assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 		}
 
 		@Test
@@ -165,7 +166,7 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 			HttpEntity<?> httpEntity = httpEntityWithBearerTokenHeader();
 			ResponseEntity<List<LeaveRequestDTO>> response = restTemplate.exchange("/view/all", GET,
 					httpEntity, typeref);
-			assertThat(response.getStatusCode()).isEqualByComparingTo(OK);
+			assertThat(response.getStatusCode()).isEqualTo(OK);
 			assertThat(response.getHeaders().getContentType()).isEqualByComparingTo(APPLICATION_JSON);
 			assertThat(response.getBody().get(0).getEmployee()).isEqualTo("Alice");
 			assertThat(response.getBody().get(0).getStatus()).isEqualByComparingTo(PENDING);
@@ -177,5 +178,4 @@ class LeaveRequestControllerSpringBootWebEnvRandomPortTest {
 		headers.setBearerAuth("some.random.token");
 		return new HttpEntity<>(headers);
 	}
-
 }
