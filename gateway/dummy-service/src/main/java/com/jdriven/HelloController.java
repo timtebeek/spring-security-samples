@@ -1,6 +1,5 @@
 package com.jdriven;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +14,6 @@ public class HelloController {
 	public Map<String, String> hello(final @AuthenticationPrincipal Jwt jwt) {
 		System.out.println("claims:\n" + jwt.getClaims());
 		System.out.println("\nheaders:\n" + jwt.getHeaders());
-		return Collections.singletonMap("message", "Hello " + jwt.getClaimAsString("name"));
+		return Map.of("message", "Hello " + jwt.getClaimAsString("name"));
 	}
 }

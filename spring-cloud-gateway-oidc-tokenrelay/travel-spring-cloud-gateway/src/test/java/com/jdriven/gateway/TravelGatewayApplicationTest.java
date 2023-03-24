@@ -41,5 +41,4 @@ class TravelGatewayApplicationTest {
 				.expectStatus().is2xxSuccessful()
 				.expectBody(String.class).value(containsString("href=\"/whoami\"><span>Subject A</span></a>."));
 	}
-
 }

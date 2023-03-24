@@ -33,5 +33,4 @@
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

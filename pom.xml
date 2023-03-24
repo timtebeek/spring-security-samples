@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.10</version>
+		<version>3.0.5</version>
 		<relativePath />
 	</parent>
 	<packaging>pom</packaging>
@@ -15,8 +15,7 @@
 	<name>spring-security-samples</name>
 	<description>Spring Security 5 sample projects</description>
 	<properties>
-		<!-- 11 & 17+ work as well! -->
-		<java.version>8</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<modules>
 		<module>adding-spring-security</module>
@@ -27,6 +26,17 @@
 		<module>permission-evaluator</module>
 		<module>spring-cloud-gateway-oidc-tokenrelay</module>
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2022.0.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -54,7 +64,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>2.30.0</version>
+				<version>2.35.0</version>
 				<!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
 				<configuration>
 					<java>

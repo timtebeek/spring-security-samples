@@ -23,8 +23,8 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
 		User principal = (User) authentication.getPrincipal();
 
-		if (targetDomainObject instanceof Spreadsheet) {
-			return hasSpreadsheetPermission(principal, (Spreadsheet) targetDomainObject, permission);
+		if (targetDomainObject instanceof Spreadsheet spreadsheet) {
+			return hasSpreadsheetPermission(principal, spreadsheet, permission);
 		}
 
 		return false;
