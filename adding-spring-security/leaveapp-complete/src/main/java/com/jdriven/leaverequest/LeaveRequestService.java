@@ -1,18 +1,16 @@
 package com.jdriven.leaverequest;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.jdriven.leaverequest.LeaveRequest.Status;
-
+import jakarta.annotation.security.RolesAllowed;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.security.RolesAllowed;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +33,7 @@ class LeaveRequestService {
 		return repo.findByEmployee(employee);
 	}
 
-	@PostAuthorize("returnObject.orElse(null)?.employee == authentication.name or hasRole('HR')")
+	@PostAuthorize("returnObject.isEmpty() or returnObject.orElse(null)?.employee == authentication.name or hasRole('HR')")
 	public Optional<LeaveRequest> retrieve(UUID id) {
 		return repo.findById(id);
 	}
