@@ -1,6 +1,6 @@
 name: Java CI
 
-on: [push, fork]
+on: [push, fork, pull_request]
 
 jobs:
   build:
